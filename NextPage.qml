@@ -15,5 +15,26 @@ Page {
             color: "white"
             font.pixelSize: 20
         }
+
+        Item {
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+            y: parent.height * 0.6
+            height: 60
+
+            RowLayout {
+                anchors.fill: parent
+
+                Button {
+                    Layout.alignment: Qt.AlignCenter
+                    text: qsTr("Next page")
+                    onClicked: {
+                        stack.replace(stack.initialItem, "MainPage.qml")
+                    }
+                }
+            }
+        }
     }
 }

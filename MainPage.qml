@@ -5,125 +5,78 @@ import QtQuick.Layouts 1.12
 Page {
     id: welcomePage
     title: "welcomePage"
-    header: Rectangle {
-        id: mainHeader
-        width: parent.width
-        height: 40
-        color: "orange"
-        RowLayout {
-            anchors.fill: parent
-            Text {
-                text: qsTr("Main Page")
-                Layout.alignment: Qt.AlignCenter
-            }
+    header: MenuBar {
+        id: menuBar
+        Menu {
+            title: qsTr("&File")
+            Action { text: qsTr("&New...") }
+            Action { text: qsTr("&Open...") }
+            Action { text: qsTr("&Save") }
+            Action { text: qsTr("Save &As...") }
+            MenuSeparator { }
+            Action { text: qsTr("&Quit"); onTriggered: Qt.quit()}
+        }
+        Menu {
+            title: qsTr("&Edit")
+            Action { text: qsTr("Cu&t") }
+            Action { text: qsTr("&Copy") }
+            Action { text: qsTr("&Paste") }
+       }
+       Menu {
+            title: qsTr("&Help")
+            Action { text: qsTr("&About"); onTriggered: aboutPopup.open() }
+       }
+    }
+    /* Need massive rework (drawer gets infront)*/
+    Popup {
+        id: aboutPopup
+        anchors.centerIn: parent
+        width: 200
+        height: 300
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        Text {
+            text: qsTr("Made by: BON'Ka")
         }
     }
-
-    property bool inPortrait:{
-       if (sidePanel.show === 0) return window.width > 700
-       if (sidePanel.show === 1) return true
-       if (sidePanel.show === 2) return false
-    }
-
-    Rectangle {
-        id: sidePanel
-        width: currentWidth
-        anchors {
-            top: parent.top
-            bottom: parent.bottom
-            left: parent.left
-        }
+    /* Need work on animation */
+    readonly property bool inPortrait: window.width > 600
+    Drawer {
+        id: drawer
+        y: header.height
+        width: 200
+        height: window.height - header.height
+        modal: !inPortrait
+        interactive: !inPortrait
+        position: inPortrait ? 0 : 1
         visible: inPortrait
-        color: "blue"
 
-        property int show: 0 //0-normal; 1-forcedOpen; 2-forcedClose
-        property int currentWidth: 200
-        property int lastX: 0
-
-        Rectangle {
-            id: resizeBar
-            width: 5
-            anchors {
-                right: parent.right
-                top: parent.top
-                bottom: parent.bottom
-            }
-            color: "yellow"
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.SizeHorCursor
-                onClicked: console.log(sidePanel.lastX = mouseX)
-                onMouseXChanged: sidePanel.currentWidth += mouseX - sidePanel.lastX - 2
-            }
-        }
-
-        ListView {
-            id: mainWindowList
+        ScrollView {
+            anchors.fill: parent
             clip: true
-            anchors {
-                left: parent.left
-                top: parent.top
-                bottom: parent.bottom
-            }
-            width: sidePanel.currentWidth - resizeBar.width;
-            model: AvailablePersons {}
-            delegate: Item {
-                id: wrapper
-                width: 150; height: 40
-                Column {
-                    Text { text: '<b>Name:</b> ' + name }
-                    Text { text: '<b>Status:</b> ' + status }
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        mainWindowList.currentIndex = index
-                        personCard.personText = name + " : " + status
-                    }
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            ListView {
+                anchors.fill: parent
+                model: 20
+                delegate: ItemDelegate {
+                    text: "Item " + index
                 }
             }
-            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
         }
     }
-
     Item {
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        x: inPortrait ? sidePanel.width : 0
+        id: mainContext
+        height: parent.height
+        width: parent.width - drawer.width * drawer.position
+        x: drawer.width * drawer.position
 
+        //custom objects
         Rectangle {
-            id: showButton
+            anchors.centerIn: parent
             width: 100
             height: 100
-            color: inPortrait ? "green" : "red"
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    if (sidePanel.show === 0)
-                        if (window.width > 700) {sidePanel.show = 2} else {sidePanel.show = 1}
-                    else
-                        if (sidePanel.show === 1) {sidePanel.show = 2} else {sidePanel.show = 1}
-                }
-            }
-        }
-
-        Item {
-            id: personCard
-            visible: this.personText === "" ? false : true
-            property string personText: ""
-
-            Rectangle {
-                x: 150
-                height: 50
-                width: 50
-                color: "grey"
-            }
-            Text {
-                x: 150
-                y: 150
-                text: qsTr(parent.personText)
-            }
+            color: "black"
         }
     }
-
 }
