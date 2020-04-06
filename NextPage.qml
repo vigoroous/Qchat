@@ -16,6 +16,7 @@ Page {
             font.pixelSize: 20
         }
 
+        //mb_think_here_of_smth_else_______________________________?
         Item {
             anchors {
                 left: parent.left
@@ -23,18 +24,16 @@ Page {
             }
             y: parent.height * 0.6
             height: 60
-
             RowLayout {
                 anchors.fill: parent
 
                 Button {
                     Layout.alignment: Qt.AlignCenter
                     text: qsTr("Next page")
-                    onClicked: {
-                        stack.replace(stack.initialItem, "MainPage.qml")
-                    }
+                    onClicked: stack.replace(stack.initialItem, "MainPage.qml")
                 }
             }
         }
+        //__________________________________________________________?
     }
 }
