@@ -19,10 +19,13 @@ ApplicationWindow {
             Button {
                 text: "pop"
                 Layout.alignment: Qt.AlignLeft
+                Layout.fillWidth: true
+                Layout.minimumWidth: 50
+                Layout.maximumWidth: 100
                 enabled: stack.depth > 1
                 onClicked: {
                     stack.pop()
-                    var pos = buttonRow.count-1
+                    var pos = buttonRow.count-2
                     var elem = buttonRow.get(pos)
                     buttonRow.remove(pos)
                     elem.destroy()
@@ -33,6 +36,9 @@ ApplicationWindow {
                 id: pushButton
                 text: "push"
                 Layout.alignment: Qt.AlignRight
+                Layout.fillWidth: true
+                Layout.minimumWidth: 50
+                Layout.maximumWidth: 100
                 onClicked: {
                     stack.push("MainPage.qml")
                     var newComp = Qt.createComponent("DynButton.qml");
