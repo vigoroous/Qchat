@@ -19,9 +19,6 @@ ApplicationWindow {
             Button {
                 text: "pop"
                 Layout.alignment: Qt.AlignLeft
-                Layout.fillWidth: true
-                Layout.minimumWidth: 50
-                Layout.maximumWidth: 100
                 enabled: stack.depth > 1
                 onClicked: {
                     stack.pop()
@@ -36,22 +33,18 @@ ApplicationWindow {
                 id: pushButton
                 text: "push"
                 Layout.alignment: Qt.AlignRight
-                Layout.fillWidth: true
-                Layout.minimumWidth: 50
-                Layout.maximumWidth: 100
                 onClicked: {
                     stack.push("MainPage.qml")
                     var newComp = Qt.createComponent("DynButton.qml");
                     if (newComp.status === Component.Ready) {
                         var newObj = newComp.createObject()
                         newObj.text = stack.depth
+                        newObj.index = stack.depth
                         buttonRow.insert(buttonRow.count-1, newObj)
                     }
                 }
             }
         }
-
-        property var buttonRowList: []
 
        RowLayout {
            anchors.fill: parent

@@ -59,15 +59,17 @@ Page {
 
         ListView {
             id: mainWindowList
+            clip: true
             anchors {
                 left: parent.left
                 top: parent.top
                 bottom: parent.bottom
             }
+            width: sidePanel.currentWidth - resizeBar.width;
             model: AvailablePersons {}
             delegate: Item {
                 id: wrapper
-                width: sidePanel.currentWidth - resizeBar.width; height: 40
+                width: 150; height: 40
                 Column {
                     Text { text: '<b>Name:</b> ' + name }
                     Text { text: '<b>Status:</b> ' + status }
