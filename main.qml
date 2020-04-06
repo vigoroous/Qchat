@@ -1,6 +1,7 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.12
+import QtQml.Models 2.14
 
 ApplicationWindow {
     id: window
@@ -12,31 +13,52 @@ ApplicationWindow {
         id: windowHeader
         height: 40
         width: parent.width
-        RowLayout {
-            anchors.fill: parent
+
+        ObjectModel {
+            id:buttonRow
             Button {
                 text: "pop"
                 Layout.alignment: Qt.AlignLeft
-                enabled: stack.depth > 0
+                enabled: stack.depth > 1
                 onClicked: {
-                    if (stack.depth === 1) {
-                        console.log("lul fuck u")
-                        return
-                    }
                     stack.pop()
+                    var pos = buttonRow.count-1
+                    var elem = buttonRow.get(pos)
+                    buttonRow.remove(pos)
+                    elem.destroy()
+                    console.log(elem)
                 }
             }
             Button {
+                id: pushButton
                 text: "push"
                 Layout.alignment: Qt.AlignRight
-                onClicked: stack.push("qrc:/NextPage.qml")
+                onClicked: {
+                    stack.push("MainPage.qml")
+                    var newComp = Qt.createComponent("DynButton.qml");
+                    if (newComp.status === Component.Ready) {
+                        var newObj = newComp.createObject()
+                        newObj.text = stack.depth
+                        buttonRow.insert(buttonRow.count-1, newObj)
+                    }
+                }
             }
         }
+
+        property var buttonRowList: []
+
+       RowLayout {
+           anchors.fill: parent
+           Repeater {
+               model: buttonRow
+           }
+       }
     }
 
     StackView {
             id: stack
-            initialItem: MainPage {}
+            initialItem: NextPage {}
             anchors.fill: parent
     }
+
 }

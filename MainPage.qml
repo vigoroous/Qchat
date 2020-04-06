@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.12
 
 Page {
     id: welcomePage
+    title: "welcomePage"
     header: Rectangle {
         id: mainHeader
         width: parent.width

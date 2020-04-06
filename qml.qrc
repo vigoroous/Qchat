@@ -4,5 +4,6 @@
         <file>MainPage.qml</file>
         <file>NextPage.qml</file>
         <file>AvailablePersons.qml</file>
+        <file>DynButton.qml</file>
     </qresource>
 </RCC>

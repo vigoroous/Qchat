@@ -4,10 +4,16 @@ import QtQuick.Layouts 1.12
 
 Page {
     id: nextPage
-    title: "next page"
+    title: "nextPage"
     Rectangle {
-        width: 400
-        height: 400
+        anchors.fill: parent
         color: "black"
+
+        Text {
+            anchors.centerIn: parent
+            text: qsTr("Welcoming Page")
+            color: "white"
+            font.pixelSize: 20
+        }
     }
 }
