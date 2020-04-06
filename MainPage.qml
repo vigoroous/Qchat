@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.12
+import Qt.labs.settings 1.0
 
 Page {
     id: welcomePage
@@ -110,7 +111,11 @@ Page {
         Text {anchors.centerIn: parent; text: qsTr("Made by: BON'Ka") }
     }
     //______________________________________________________?
-    //Bruh..._______________________________________________?
+    //Bruh..._styles_(delete_later)_________________________?
+    Settings {
+        id: settings
+        property string style: "Default"
+    }
     Dialog {
         id: settingsDialog
         z:1
@@ -122,6 +127,14 @@ Page {
         title: "Settings"
 
         standardButtons: Dialog.Ok | Dialog.Cancel
+        onAccepted: {
+            settings.style = styleBox.displayText
+            settingsDialog.close()
+        }
+        onRejected: {
+            styleBox.currentIndex = styleBox.styleIndex
+            settingsDialog.close()
+        }
 
         contentItem: ColumnLayout {
             id: settingsColumn
@@ -136,8 +149,25 @@ Page {
 
                 ComboBox {
                     id: styleBox
-                    property int styleIndex: -1
                     Layout.fillWidth: true
+                    property int styleIndex: -1
+                    model: availableStyles
+                    popup.z: 1
+                    Component.onCompleted: {
+                        styleIndex = find(settings.style, Qt.MatchFixedString)
+                        if (styleIndex !== -1)
+                            currentIndex = styleIndex
+                    }
+                }
+
+                Label {
+                    text: "Restart required"
+                    color: "#e41e25"
+                    opacity: styleBox.currentIndex !== styleBox.styleIndex ? 1.0 : 0.0
+                    horizontalAlignment: Label.AlignHCenter
+                    verticalAlignment: Label.AlignVCenter
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
                 }
             }
         }
