@@ -3,14 +3,14 @@ import QtQuick 2.0
 ListModel {
     ListElement {
         name: "Bill Smith"
-        status: "online"
+        status: 1
     }
     ListElement {
         name: "John Brown"
-        status: "sleep"
+        status: 2
     }
     ListElement {
         name: "Sam Wise"
-        status: "offline"
+        status: 0
     }
 }

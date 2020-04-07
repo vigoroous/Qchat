@@ -55,14 +55,20 @@ Page {
                    anchors.fill: parent
                    onClicked: {
                        list.currentIndex = index
-                       //there we'll be fetching person
-                       _card.text = name
-                       //bullshit need rework_________________________
-                       _status.text = status
-                       if (status === "offline") _status.color = "red"
-                       if (status === "sleep") _status.color = "yellow"
-                       if (status === "online") _status.color = "green"
-                       //_____________________________________________
+                       //reworkkk________________________________
+                       // 0-Offline, 1-Online, 2-Sleep
+                       var _statusText = ""
+                       var _statusColor = ""
+                       if (status === 0) {_statusText = "Offline"; _statusColor = "red"}
+                       if (status === 1) {_statusText = "Online"; _statusColor = "green"}
+                       if (status === 2) {_statusText = "Sleep"; _statusColor = "yellow"}
+                       if (personCardLoader.status === Loader.Null) {
+                           personCardLoader.setSource("PersonPage.qml", {"_card": name, "_statusText": _statusText, "_statusColor": _statusColor})
+                       } else {
+                           var currItem = personCardLoader.item
+                           currItem._card = name; currItem._statusText = _statusText; currItem._statusColor = _statusColor
+                       }
+                       //________________________________________
                    }
                }
            }
@@ -75,26 +81,7 @@ Page {
         width: inPortrait ? parent.width : parent.width - drawer.width * drawer.position
         x: inPortrait ? 0 : drawer.width * drawer.position
 
-        //custom objects also rework_____________________
-        Frame {
-            anchors.centerIn: parent
-            width: 100
-            height: 100
-            Column {
-                y: 10
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 2
-                Text {id: _card }
-                Row {
-                    Text {text: "Status: " }
-                    Text {id: _status }
-                }
-                Switch {onToggled: _calling.running = !_calling.running }
-            }
-        }
-        BusyIndicator {id: _calling; anchors.horizontalCenter: parent.horizontalCenter; running: false}
-        //_________________________________________________
-
+        Loader {id: personCardLoader; asynchronous: true; anchors.fill: parent }
     }
 
     //may_be_put_in_qml_file_______________________________?

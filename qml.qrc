@@ -4,7 +4,7 @@
         <file>MainPage.qml</file>
         <file>NextPage.qml</file>
         <file>AvailablePersons.qml</file>
-        <file>DynButton.qml</file>
         <file>AboutPopup.qml</file>
+        <file>PersonPage.qml</file>
     </qresource>
 </RCC>
