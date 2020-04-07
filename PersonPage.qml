@@ -6,26 +6,49 @@ Page {
     id: personPage
     title: "personPage"
     anchors.fill: parent
-    //custom objects also rework_____________________
     property string _card: ""
     property string _statusText: ""
     property string _statusColor: ""
     Frame {
         id: personFrame
-        width: 100
-        height: 100
-        Column {
-            y: 10
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 2
-            Text {id: _cardId; text: personPage._card}
-            Row {
-                Text {text: "Status: " }
-                Text {id: _statusId; text:personPage._statusText; color:personPage._statusColor }
+        anchors.fill: parent
+        Rectangle {
+            id: callpanel
+            height: 200
+            width: 200
+            color: "lightgrey"
+            Column {
+                spacing: 2
+                Text { text: _card}
+                Row {
+                    Text{text: "status: "}
+                    Text{text: _statusText; color: _statusColor}
+                }
             }
-            Switch {onToggled: _calling.running = !_calling.running }
+        }
+        ListView {
+            /* TO_DO:
+             * fetch function to get MessagesList dynamically by tcp
+             */
+            y: callpanel.height
+            width: 200
+            height: inputPanel.y - this.y
+            spacing: 5
+            clip: true
+            ScrollBar.vertical: ScrollBar{policy: ScrollBar.AlwaysOn }
+            model: MessagesList {}
+            delegate: Text {text: _text; color: "black"}
+        }
+        Row {
+            id: inputPanel
+            y:parent.height * 0.8
+            x:parent.width * 0.3
+            spacing: 10
+            TextField {
+            }
+            Button {
+                text: "send"
+            }
         }
     }
-    BusyIndicator {id: _calling; x: personFrame.width + 50; running: false}
-    //_________________________________________________
 }

@@ -6,5 +6,7 @@
         <file>AvailablePersons.qml</file>
         <file>AboutPopup.qml</file>
         <file>PersonPage.qml</file>
+        <file>SettingPage.qml</file>
+        <file>MessagesList.qml</file>
     </qresource>
 </RCC>

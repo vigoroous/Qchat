@@ -1,7 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.12
-import Qt.labs.settings 1.0
 
 Page {
     id: welcomePage
@@ -25,35 +24,43 @@ Page {
        }
        Menu {
             title: qsTr("&Help")
-            Action { text: qsTr("&Settings..."); onTriggered: settingsDialog.open() }
+            Action { text: qsTr("&Settings..."); onTriggered: stack.push("SettingPage.qml") }
             Action { text: qsTr("&About"); onTriggered: aboutPopup.open() }
        }
     }
 
     readonly property bool inPortrait: window.width < 800
+    readonly property bool onPage: stack.currentItem === welcomePage
     Drawer {
         id: drawer
-        y: header.height
+        enabled: onPage
+        y: menuBar.height
         width: 200
-        height: window.height - header.height
+        height: window.height - menuBar.height
         modal: inPortrait
         interactive: inPortrait
         position: inPortrait ? 0 : 1
-        visible: !inPortrait
+        visible: !inPortrait && onPage
 
        ListView {
+           /* TO_DO:
+            * fetch_function to get listmodel dynamically by tcp
+            */
            id: list
            anchors.fill: parent
            clip: true
            ScrollBar.vertical: ScrollBar{}
            model: AvailablePersons {}
            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+           currentIndex: -1
            //rework delegate__________________________________________
            delegate: ItemDelegate {
                text: name + " (" + status + ")"
                MouseArea {
                    anchors.fill: parent
                    onClicked: {
+                       if (personCardLoader.status === Loader.Loading) return
+//                       personCardLoaderBusy.running = true
                        list.currentIndex = index
                        //reworkkk________________________________
                        // 0-Offline, 1-Online, 2-Sleep
@@ -77,11 +84,11 @@ Page {
     }
     Item {
         id: mainContext
+        x: inPortrait ? 0 : drawer.width
+        width: parent.width - this.x
         height: parent.height
-        width: inPortrait ? parent.width : parent.width - drawer.width * drawer.position
-        x: inPortrait ? 0 : drawer.width * drawer.position
-
-        Loader {id: personCardLoader; asynchronous: true; anchors.fill: parent }
+        Loader {id: personCardLoader; asynchronous: true; anchors.fill: parent; onLoaded: {personCardLoaderBusy.running = false}}
+        BusyIndicator {id: personCardLoaderBusy; running: true } //WTF IS THAT?????
     }
 
     //may_be_put_in_qml_file_______________________________?
@@ -96,68 +103,6 @@ Page {
         focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         Text {anchors.centerIn: parent; text: qsTr("Made by: BON'Ka") }
-    }
-    //______________________________________________________?
-    //Bruh..._styles_(delete_later)_________________________?
-    Settings {
-        id: settings
-        property string style: "Default"
-    }
-    Dialog {
-        id: settingsDialog
-        z:1
-        x: Math.round((window.width - width) / 2)
-        y: Math.round(window.height / 6)
-        width: Math.round(Math.min(window.width, window.height) / 3 * 2)
-        modal: true
-        focus: true
-        title: "Settings"
-
-        standardButtons: Dialog.Ok | Dialog.Cancel
-        onAccepted: {
-            settings.style = styleBox.displayText
-            settingsDialog.close()
-        }
-        onRejected: {
-            styleBox.currentIndex = styleBox.styleIndex
-            settingsDialog.close()
-        }
-
-        contentItem: ColumnLayout {
-            id: settingsColumn
-            spacing: 20
-
-            RowLayout {
-                spacing: 10
-
-                Label {
-                    text: "Style:"
-                }
-
-                ComboBox {
-                    id: styleBox
-                    Layout.fillWidth: true
-                    property int styleIndex: -1
-                    model: availableStyles
-                    popup.z: 1
-                    Component.onCompleted: {
-                        styleIndex = find(settings.style, Qt.MatchFixedString)
-                        if (styleIndex !== -1)
-                            currentIndex = styleIndex
-                    }
-                }
-
-                Label {
-                    text: "Restart required"
-                    color: "#e41e25"
-                    opacity: styleBox.currentIndex !== styleBox.styleIndex ? 1.0 : 0.0
-                    horizontalAlignment: Label.AlignHCenter
-                    verticalAlignment: Label.AlignVCenter
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                }
-            }
-        }
     }
     //______________________________________________________?
 }

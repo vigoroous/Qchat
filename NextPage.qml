@@ -26,7 +26,6 @@ Page {
             height: 60
             RowLayout {
                 anchors.fill: parent
-
                 Button {
                     Layout.alignment: Qt.AlignCenter
                     text: qsTr("Next page")
