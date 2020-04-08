@@ -4,6 +4,8 @@
 #include <QSettings>
 #include <QQuickStyle>
 
+#include "src_c++/msglist.h"
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -20,6 +22,10 @@ int main(int argc, char *argv[])
     else
         QQuickStyle::setStyle(settings.value("style").toString());
     engine.rootContext()->setContextProperty("availableStyles", QQuickStyle::availableStyles());
+    //____________________________________________________
+
+    //REGISTERING_TYPES___________________________________
+    qmlRegisterType<msgList>("usr.msgList", 1 , 0, "MsgListModel");
     //____________________________________________________
     engine.load(QUrl("qrc:/main.qml"));
     if (engine.rootObjects().isEmpty())

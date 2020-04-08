@@ -2,6 +2,10 @@ import QtQuick 2.0
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.12
 
+//CUTOM_IMPORT____________________________
+import usr.msgList 1.0
+//________________________________________
+
 Page {
     id: personPage
     title: "personPage"
@@ -31,12 +35,12 @@ Page {
              * fetch function to get MessagesList dynamically by tcp
              */
             y: callpanel.height
-            width: 200
+            width: parent.width
             height: inputPanel.y - this.y
             spacing: 5
             clip: true
             ScrollBar.vertical: ScrollBar{policy: ScrollBar.AlwaysOn }
-            model: MessagesList {}
+            model: MsgListModel {id: msgListModel}
             delegate: Text {text: _text; color: "black"}
         }
         Row {
@@ -48,6 +52,7 @@ Page {
             }
             Button {
                 text: "send"
+                onClicked: msgListModel.addMessage("lol")
             }
         }
     }

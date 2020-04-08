@@ -87,8 +87,8 @@ Page {
         x: inPortrait ? 0 : drawer.width
         width: parent.width - this.x
         height: parent.height
-        Loader {id: personCardLoader; asynchronous: true; anchors.fill: parent; onLoaded: {personCardLoaderBusy.running = false}}
-        BusyIndicator {id: personCardLoaderBusy; running: true } //WTF IS THAT?????
+        Loader {id: personCardLoader; asynchronous: true; anchors.fill: parent; }
+        BusyIndicator {id: personCardLoaderBusy; running: personCardLoader.status === Loader.Null } //WTF IS THAT?????
     }
 
     //may_be_put_in_qml_file_______________________________?

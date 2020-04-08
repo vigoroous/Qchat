@@ -11,7 +11,7 @@ ApplicationWindow {
 
     StackView {
             id: stack
-            initialItem: NextPage {}
+            initialItem: "src_qml/nextPage.qml"
             anchors.fill: parent
     }
 

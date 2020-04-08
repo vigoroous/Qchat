@@ -1,12 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>MainPage.qml</file>
-        <file>NextPage.qml</file>
-        <file>AvailablePersons.qml</file>
-        <file>AboutPopup.qml</file>
-        <file>PersonPage.qml</file>
-        <file>SettingPage.qml</file>
-        <file>MessagesList.qml</file>
+        <file>src_qml/AboutPopup.qml</file>
+        <file>src_qml/AvailablePersons.qml</file>
+        <file>src_qml/mainPage.qml</file>
+        <file>src_qml/MessagesList.qml</file>
+        <file>src_qml/nextPage.qml</file>
+        <file>src_qml/PersonPage.qml</file>
+        <file>src_qml/SettingPage.qml</file>
     </qresource>
 </RCC>

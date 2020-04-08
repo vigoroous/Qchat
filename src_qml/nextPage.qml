@@ -29,7 +29,7 @@ Page {
                 Button {
                     Layout.alignment: Qt.AlignCenter
                     text: qsTr("Next page")
-                    onClicked: stack.replace(stack.initialItem, "MainPage.qml")
+                    onClicked: stack.replace(stack.initialItem, "mainPage.qml")
                 }
             }
         }

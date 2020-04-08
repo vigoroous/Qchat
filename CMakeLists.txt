@@ -26,6 +26,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Core Quick QuickControls2 REQUIRED)
 
+file(GLOB src_files
+    "src_c++/*.cpp"
+    "src_c++/*.h"
+    )
+
 if(ANDROID)
     add_library(Qchat SHARED
       main.cpp
@@ -35,6 +40,7 @@ else()
     add_executable(Qchat
       main.cpp
       qml.qrc
+      ${src_files}
     )
 endif()
 
