@@ -14,7 +14,7 @@ int msgList::rowCount(const QModelIndex &parent) const
         return 0;
 
     // FIXME: Implement me!
-    return _data.length();
+    return _data.count();
 }
 
 QVariant msgList::data(const QModelIndex &index, int role) const
@@ -37,6 +37,7 @@ QHash<int, QByteArray> msgList::roleNames() const
 
 void msgList::addMessage(const QString &msg)
 {
-    std::cout << msg.toStdString();
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
     _data.push_back(msg);
+    endInsertRows();
 }

@@ -49,10 +49,11 @@ Page {
             x:parent.width * 0.3
             spacing: 10
             TextField {
+                id: inputMsg
             }
             Button {
                 text: "send"
-                onClicked: msgListModel.addMessage("lol")
+                onClicked: msgListModel.addMessage(inputMsg.text)
             }
         }
     }
