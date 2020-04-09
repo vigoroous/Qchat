@@ -83,7 +83,7 @@ Page {
                             acceptedButtons: Qt.RightButton
                             anchors.fill: parent
                             cursorShape: Qt.IBeamCursor
-                            onClicked: contextMenu.open()
+                            onClicked: contextMenu.popup(mouse.x,mouse.y-contextMenu.height)
                         }
                         Keys.onPressed: {
                             if (event.key === Qt.Key_Return){
