@@ -2,6 +2,10 @@ import QtQuick 2.0
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.12
 
+//CUTOM_IMPORT____________________________
+import usr.socketBackend 1.0
+//________________________________________
+
 Page {
     id: welcomePage
     title: "welcomePage"
@@ -50,35 +54,51 @@ Page {
            anchors.fill: parent
            clip: true
            ScrollBar.vertical: ScrollBar{}
-           model: AvailablePersons {}
+           model: AvailablePersons { id:listmodel }
            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
            currentIndex: -1
            //rework delegate__________________________________________
+           property var callback: undefined
            delegate: ItemDelegate {
                text: name + " (" + status + ")"
                MouseArea {
                    anchors.fill: parent
                    onClicked: {
-                       if (personCardLoader.status === Loader.Loading) return
-                       list.currentIndex = index
-                       //reworkkk________________________________
-                       // 0-Offline, 1-Online, 2-Sleep
-                       var _statusText, _statusColor;
-                       if (status === 0) {_statusText = "Offline"; _statusColor = "red"}
-                       if (status === 1) {_statusText = "Online"; _statusColor = "green"}
-                       if (status === 2) {_statusText = "Sleep"; _statusColor = "yellow"}
-                       if (personCardLoader.status === Loader.Null) {
-                           personCardLoader.setSource("PersonPage.qml", {"_card": name, "_statusText": _statusText, "_statusColor": _statusColor})
-                       } else {
-                           var currItem = personCardLoader.item
-                           currItem._card = name; currItem._statusText = _statusText; currItem._statusColor = _statusColor
+                       //reworkkk_____________________________________________
+                       if (tcpSocket.isConnected())
+                           return
+                       personCardLoaderBusy.running = true
+                       list.callback = function oldFunc() {
+                           if (personCardLoader.status === Loader.Loading) return
+                           list.currentIndex = index
+                           // 0-Offline, 1-Online, 2-Sleep
+                           var _statusText, _statusColor;
+                           if (status === 0) {_statusText = "Offline"; _statusColor = "red"}
+                           if (status === 1) {_statusText = "Online"; _statusColor = "green"}
+                           if (status === 2) {_statusText = "Sleep"; _statusColor = "yellow"}
+                           if (personCardLoader.status === Loader.Null) {
+                               personCardLoader.setSource("PersonPage.qml", {"_card": name, "_statusText": _statusText, "_statusColor": _statusColor})
+                           } else {
+                               var currItem = personCardLoader.item
+                               currItem._card = name; currItem._statusText = _statusText; currItem._statusColor = _statusColor
+                           }
                        }
-                       //________________________________________
+                       tcpSocket.connectToHost("benar.wtf", 27015)
+                       //_____________________________________________________
                    }
                }
            }
            //_________________________________________________________
        }
+       TCPSocket {
+           id: tcpSocket
+           onErrorSending: cosole.log(errMsg)
+           onConnected: {
+               personCardLoaderBusy.running = false
+               list.callback();
+           }
+       }
+
     }
     Item {
         id: mainContext
@@ -86,7 +106,7 @@ Page {
         width: parent.width - this.x
         height: parent.height
         Loader {id: personCardLoader; asynchronous: true; anchors.fill: parent }
-        BusyIndicator {id: personCardLoaderBusy; running: personCardLoader.status === Loader.Null } //WTF IS THAT?????
+        BusyIndicator {id: personCardLoaderBusy; running: false } //WTF IS THAT?????
     }
 
     //may_be_put_in_qml_file_______________________________?

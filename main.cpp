@@ -5,6 +5,7 @@
 #include <QQuickStyle>
 
 #include "src_c++/msglist.h"
+#include "src_c++/socketbackend.h"
 
 int main(int argc, char *argv[])
 {
@@ -26,6 +27,7 @@ int main(int argc, char *argv[])
 
     //REGISTERING_TYPES___________________________________
     qmlRegisterType<msgList>("usr.msgList", 1 , 0, "MsgListModel");
+    qmlRegisterType<socketBackend>("usr.socketBackend", 1, 0, "TCPSocket");
     //____________________________________________________
     engine.load(QUrl("qrc:/main.qml"));
     if (engine.rootObjects().isEmpty())
