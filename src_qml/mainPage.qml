@@ -57,8 +57,10 @@ Page {
            model: AvailablePersons { id:listmodel }
            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
            currentIndex: -1
-           //rework delegate__________________________________________
+           //ACHTUNG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
            property var callback: undefined
+           //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+           //rework delegate__________________________________________
            delegate: ItemDelegate {
                text: name + " (" + status + ")"
                MouseArea {
