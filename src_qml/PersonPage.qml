@@ -9,11 +9,10 @@ import usr.msgList 1.0
 Page {
     id: personPage
     title: "personPage"
-    anchors.fill: parent
     property string _card: ""
     property string _statusText: ""
     property string _statusColor: ""
-    Frame {
+    contentItem: Frame {
         id: personFrame
         anchors.fill: parent
         Rectangle {
@@ -34,27 +33,94 @@ Page {
             /* TO_DO:
              * fetch function to get MessagesList dynamically by tcp
              */
-            y: callpanel.height
+            id: messageList
+            anchors {
+                top: callpanel.bottom
+                bottom: inputPanel.top
+                topMargin: 5
+                bottomMargin: 5
+            }
             width: parent.width
-            height: inputPanel.y - this.y
             spacing: 5
             clip: true
-            ScrollBar.vertical: ScrollBar{policy: ScrollBar.AlwaysOn }
+            ScrollBar.vertical: ScrollBar {policy: ScrollBar.AsNeeded }
             model: MsgListModel {id: msgListModel}
-            delegate: Text {text: _text; color: "black"}
+            delegate: Rectangle {
+                width: parent.width
+                height: messageDelegate.paintedHeight
+                color: "lightgrey"
+                border.color: msgDlgHndl.containsMouse ? "lightgreen" : "lightred"
+                Text {id: messageDelegate; text: _text; color: "black"}
+                MouseArea {id: msgDlgHndl; anchors.fill: parent; hoverEnabled: true}
+            }
         }
         Row {
             id: inputPanel
-            y:parent.height * 0.8
-            x:parent.width * 0.3
+            y:parent.height - height
+            width: parent.width
+            height: 50
             spacing: 10
-            TextField {
-                id: inputMsg
+            //Definetly_rework____Rectangle________________________
+            Rectangle {
+                id: textAreaWrapper
+                height: parent.height
+                width: parent.width
+                color: "lightblue"
+                border.color: textArea.activeFocus ? "blue" : "grey"
+                border.width: 1
+                ScrollView {
+                    anchors.fill: parent
+                    clip: true
+                    TextArea{
+                        id: textArea
+                        textFormat: Qt.PlainText
+                        wrapMode: TextArea.Wrap
+                        focus: true
+                        selectByMouse: true
+                        persistentSelection: true
+                        placeholderText: qsTr("Start typing here......");
+                        MouseArea {
+                            acceptedButtons: Qt.RightButton
+                            anchors.fill: parent
+                            cursorShape: Qt.IBeamCursor
+                            onClicked: contextMenu.open()
+                        }
+                        Keys.onPressed: {
+                            if (event.key === Qt.Key_Return){
+                                event.accepted = true
+                                if (event.modifiers & Qt.ControlModifier) {
+                                    var pos = textArea.cursorPosition
+                                    textArea.insert(pos,'\n')
+                                } else {
+                                    if (!textArea.text) return
+                                    msgListModel.addMessage(textArea.text)
+                                    textArea.text = ""
+                                    messageList.positionViewAtEnd()
+                                }
+                            }
+                        }
+                    }
+                }
+                Menu {
+                    id: contextMenu
+                    MenuItem {
+                        text: qsTr("Copy")
+                        enabled: textArea.selectedText
+                        onTriggered: textArea.copy()
+                    }
+                    MenuItem {
+                        text: qsTr("Cut")
+                        enabled: textArea.selectedText
+                        onTriggered: textArea.cut()
+                    }
+                    MenuItem {
+                        text: qsTr("Paste")
+                        enabled: textArea.canPaste
+                        onTriggered: textArea.paste()
+                    }
+                }
             }
-            Button {
-                text: "send"
-                onClicked: msgListModel.addMessage(inputMsg.text)
-            }
+            //____________________________________________________________________
         }
     }
 }

@@ -10,29 +10,19 @@ Page {
         color: "black"
 
         Text {
+            id: wlkText
             anchors.centerIn: parent
             text: qsTr("Welcoming Page")
             color: "white"
             font.pixelSize: 20
         }
-
-        //mb_think_here_of_smth_else_______________________________?
-        Item {
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
-            y: parent.height * 0.6
-            height: 60
-            RowLayout {
-                anchors.fill: parent
-                Button {
-                    Layout.alignment: Qt.AlignCenter
-                    text: qsTr("Next page")
-                    onClicked: stack.replace(stack.initialItem, "mainPage.qml")
-                }
-            }
+        Button {
+            anchors.top: wlkText.bottom
+            anchors.topMargin: 10
+            anchors.horizontalCenter: wlkText.horizontalCenter
+            text: qsTr("Next page")
+            onClicked: stack.replace(stack.initialItem, "mainPage.qml")
         }
-        //__________________________________________________________?
     }
+        //__________________________________________________________?
 }

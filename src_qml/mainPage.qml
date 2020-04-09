@@ -60,12 +60,10 @@ Page {
                    anchors.fill: parent
                    onClicked: {
                        if (personCardLoader.status === Loader.Loading) return
-//                       personCardLoaderBusy.running = true
                        list.currentIndex = index
                        //reworkkk________________________________
                        // 0-Offline, 1-Online, 2-Sleep
-                       var _statusText = ""
-                       var _statusColor = ""
+                       var _statusText, _statusColor;
                        if (status === 0) {_statusText = "Offline"; _statusColor = "red"}
                        if (status === 1) {_statusText = "Online"; _statusColor = "green"}
                        if (status === 2) {_statusText = "Sleep"; _statusColor = "yellow"}
@@ -87,7 +85,7 @@ Page {
         x: inPortrait ? 0 : drawer.width
         width: parent.width - this.x
         height: parent.height
-        Loader {id: personCardLoader; asynchronous: true; anchors.fill: parent; }
+        Loader {id: personCardLoader; asynchronous: true; anchors.fill: parent }
         BusyIndicator {id: personCardLoaderBusy; running: personCardLoader.status === Loader.Null } //WTF IS THAT?????
     }
 
