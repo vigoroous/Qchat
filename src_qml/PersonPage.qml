@@ -48,9 +48,8 @@ Page {
             delegate: Rectangle {
                 width: parent.width
                 height: messageDelegate.paintedHeight
-                color: "lightgrey"
                 border.color: msgDlgHndl.containsMouse ? "lightgreen" : "lightred"
-                Text {id: messageDelegate; text: _text; color: "black"}
+                Text {id: messageDelegate; width: parent.width; text: _text; color: "black"; wrapMode: Text.Wrap }
                 MouseArea {id: msgDlgHndl; anchors.fill: parent; hoverEnabled: true}
             }
         }
@@ -65,7 +64,6 @@ Page {
                 id: textAreaWrapper
                 height: parent.height
                 width: parent.width
-                color: "lightblue"
                 border.color: textArea.activeFocus ? "blue" : "grey"
                 border.width: 1
                 ScrollView {
@@ -88,12 +86,14 @@ Page {
                         Keys.onPressed: {
                             if (event.key === Qt.Key_Return){
                                 event.accepted = true
+                                const msg = textArea.text
                                 if (event.modifiers & Qt.ControlModifier) {
                                     var pos = textArea.cursorPosition
                                     textArea.insert(pos,'\n')
                                 } else {
-                                    if (!textArea.text) return
-                                    msgListModel.addMessage(textArea.text)
+                                    if (!msg) return
+                                    if (tcpSocket.isConnected()) tcpSocket.sendStringMsg(msg)
+                                    msgListModel.addMessage(qsTr(msg))
                                     textArea.text = ""
                                     messageList.positionViewAtEnd()
                                 }
