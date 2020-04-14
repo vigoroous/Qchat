@@ -46,11 +46,23 @@ Page {
             ScrollBar.vertical: ScrollBar {policy: ScrollBar.AsNeeded }
             model: MsgListModel {id: msgListModel}
             delegate: Rectangle {
+                //WTF_WITH_MOUSE
+                property bool onDelegate: mouseArea.containsMouse
                 width: parent.width
                 height: messageDelegate.paintedHeight
-                border.color: msgDlgHndl.containsMouse ? "lightgreen" : "lightred"
-                Text {id: messageDelegate; width: parent.width; text: _text; color: "black"; wrapMode: Text.Wrap }
-                MouseArea {id: msgDlgHndl; anchors.fill: parent; hoverEnabled: true}
+                border.color: onDelegate ? "lightgreen" : "lightred"
+                Text {
+                      id: messageDelegate
+                      width: parent.width
+                      text: _text; color: "black";
+                      wrapMode: Text.Wrap
+                      Layout.alignment: Qt.AlignLeft
+                  }
+                  MouseArea {
+                      id: mouseArea
+                      anchors.fill: parent
+                      hoverEnabled: true
+                  }
             }
         }
         Row {
@@ -98,6 +110,10 @@ Page {
                                     messageList.positionViewAtEnd()
                                 }
                             }
+                        }
+                        Connections {
+                            target: tcpSocket
+                            onMsgGot: msgListModel.addMessage(newMsg)
                         }
                     }
                 }

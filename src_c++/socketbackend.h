@@ -14,6 +14,7 @@ public:
 
 public slots:
     void connectToHost(const QString &_hostName, int _port);
+    void disconnectFromHost();
     void sendStringMsg(const QString &_msg);
     bool isConnected();
 
@@ -21,11 +22,13 @@ signals:
     void connected();
     void disconnected();
     void errorSending(const QString &errMsg);
+    void msgGot(const QString &newMsg);
 
 private:
     QTcpSocket _socket;
     void _connected();
     void _disconnected();
+    void _onNewMsg();
 
 };
 

@@ -9,6 +9,7 @@ import usr.socketBackend 1.0
 Page {
     id: welcomePage
     title: "welcomePage"
+    property string _name: ""
     header: MenuBar {
         id: menuBar
         Menu {
@@ -57,49 +58,69 @@ Page {
            model: AvailablePersons { id:listmodel }
            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
            currentIndex: -1
-           //ACHTUNG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-           property var callback: undefined
-           //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
            //rework delegate__________________________________________
            delegate: ItemDelegate {
                text: name + " (" + status + ")"
                MouseArea {
                    anchors.fill: parent
                    onClicked: {
-                       //reworkkk_____________________________________________
-                       if (tcpSocket.isConnected())
-                           return
+                       //reworkkk_(if connection pending and etc...)____________________________________________
+                       if (list.currentIndex === index) return
+                       if (tcpSocket.isConnected() || personCardLoader.source) {
+                           personCardLoader.source = ""
+                           tcpSocket.disconnectFromHost()
+                       }
                        personCardLoaderBusy.running = true
-                       list.callback = function oldFunc() {
+                       tcpSocket.callbackOnConnect = function _connFunc() {
                            if (personCardLoader.status === Loader.Loading) return
                            list.currentIndex = index
-                           // 0-Offline, 1-Online, 2-Sleep
-                           var _statusText, _statusColor;
-                           if (status === 0) {_statusText = "Offline"; _statusColor = "red"}
-                           if (status === 1) {_statusText = "Online"; _statusColor = "green"}
-                           if (status === 2) {_statusText = "Sleep"; _statusColor = "yellow"}
-                           if (personCardLoader.status === Loader.Null) {
-                               personCardLoader.setSource("PersonPage.qml", {"_card": name, "_statusText": _statusText, "_statusColor": _statusColor})
-                           } else {
+                           if (personCardLoader.status === Loader.Null)
+                               personCardLoader.setSource("PersonPage.qml", {"_card": name, "_statusText": "Online", "_statusColor": "Green"})
+                       }
+                       tcpSocket.callbackOnDisconnect = function _diconnFunc() {
+                           if (personCardLoader.status === Loader.Loading) {
+                               //handle disconnect before load!!!!!!!!!!!!!!!!!!!!!!!!
+                               personCardLoader.source = ""
+                           }
+                           if (personCardLoader.status === Loader.Ready) {
                                var currItem = personCardLoader.item
-                               currItem._card = name; currItem._statusText = _statusText; currItem._statusColor = _statusColor
+                               currItem._statusText = "Offline"; currItem._statusColor = "Red"
                            }
                        }
-                       tcpSocket.connectToHost("benar.wtf", 27015)
-                       //_____________________________________________________
+                       //debug++++++++++++++++++++++
+                       const _hostname = "127.0.0.1"
+                       const _port = 8787
+                       //+++++++++++++++++++++++++++
+                       tcpSocket.connectToHost(_hostname, _port)
+                       //______________________________________________________________________________________
                    }
                }
            }
            //_________________________________________________________
        }
+
+       //REWORKKK_____________________________________________________
        TCPSocket {
            id: tcpSocket
            onErrorSending: cosole.log(errMsg)
+           //ACHTUNG!FUCK!CALLBACKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+           property var callbackOnConnect: null
+           //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+           //ACHTUNG!FUCK!CALLBACKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+           property var callbackOnDisconnect: null
+           //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
            onConnected: {
+               if (!callbackOnConnect) return console.log("error on calling callbackConnectFunc: " + callbackOnConnect);
                personCardLoaderBusy.running = false
-               list.callback();
+               sendStringMsg(welcomePage._name)
+               callbackOnConnect();
+           }
+           onDisconnected: {
+               if (!callbackOnDisconnect) return console.log("error on calling callbackDisconnectFunc: " + callbackOnDisconnect);
+               callbackOnDisconnect();
            }
        }
+       //_____________________________________________________________
 
     }
     Item {

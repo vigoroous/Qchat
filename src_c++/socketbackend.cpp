@@ -11,6 +11,11 @@ void socketBackend::connectToHost(const QString &_hostName, int _port)
     _socket.connectToHost(_hostName, _port);
 }
 
+void socketBackend::disconnectFromHost()
+{
+    _socket.disconnectFromHost();
+}
+
 void socketBackend::sendStringMsg(const QString &_msg)
 {
     if (_socket.state() != QAbstractSocket::ConnectedState) {
@@ -30,11 +35,22 @@ bool socketBackend::isConnected()
 void socketBackend::_connected()
 {
     qDebug("connected...\n");
+    QObject::connect(&_socket, &QTcpSocket::readyRead, this, &socketBackend::_onNewMsg);
+    qDebug("connected signal onReadyRead...\n");
     emit connected();
 }
 
 void socketBackend::_disconnected()
 {
     qDebug("disconnected...\n");
+    QObject::disconnect(&_socket, &QTcpSocket::readyRead, this, &socketBackend::_onNewMsg);
+    qDebug("disconnected signal onReadyRead...\n");
     emit disconnected();
+}
+
+void socketBackend::_onNewMsg()
+{
+    QByteArray readBuf = _socket.read(_socket.bytesAvailable());
+    QString _readMsg(readBuf);
+    emit msgGot(_readMsg);
 }

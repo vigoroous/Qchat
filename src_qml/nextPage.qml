@@ -8,20 +8,45 @@ Page {
     Rectangle {
         anchors.fill: parent
         color: "black"
-
-        Text {
-            id: wlkText
-            anchors.centerIn: parent
-            text: qsTr("Welcoming Page")
-            color: "white"
-            font.pixelSize: 20
-        }
-        Button {
-            anchors.top: wlkText.bottom
-            anchors.topMargin: 10
-            anchors.horizontalCenter: wlkText.horizontalCenter
-            text: qsTr("Next page")
-            onClicked: stack.replace(stack.initialItem, "mainPage.qml")
+        ColumnLayout{
+            anchors.fill: parent
+            spacing: 5
+            Text {
+                id: wlkText
+                text: qsTr("Enter your name:")
+                color: "white"
+                font.pixelSize: 20
+                Layout.alignment: Qt.AlignCenter
+            }
+            Rectangle {
+                width: 100
+                height: 30
+                border.color: "lightgrey"
+                border.width: 2
+                radius: 10
+                color: "white"
+                Layout.alignment: Qt.AlignCenter
+                TextInput {
+                    id: wlkInput
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    color: "black"
+                }
+            }
+            Button {
+                id:wlkButton
+                text: qsTr("Next page")
+                Layout.alignment: Qt.AlignCenter
+                onClicked: {
+                    if (!wlkInput.text) {
+                        //rework to tooltip or popup or outline______________________
+                        console.log("enter name")
+                        //___________________________________________________________
+                        return
+                    }
+                    stack.replace(stack.initialItem, "mainPage.qml", {"_name": wlkInput.text})
+                }
+            }
         }
     }
         //__________________________________________________________?
