@@ -37,10 +37,11 @@ Page {
             anchors {
                 top: callpanel.bottom
                 bottom: inputPanel.top
+                left: parent.left
+                right: parent.right
                 topMargin: 5
                 bottomMargin: 5
             }
-            width: parent.width
             spacing: 5
             clip: true
             ScrollBar.vertical: ScrollBar {policy: ScrollBar.AsNeeded }
@@ -49,20 +50,29 @@ Page {
                 //WTF_WITH_MOUSE
                 property bool onDelegate: mouseArea.containsMouse
                 width: parent.width
-                height: messageDelegate.paintedHeight
+                height: messageDelegate.paintedHeight + 10
                 border.color: onDelegate ? "lightgreen" : "lightred"
+//                Text {
+//                    id: messageAuthor
+//                    anchors {
+//                        top: parent.top
+//                        bottom: parent.bottom
+//                        left: parent.left
+//                    }
+//                    width:
+//                }
                 Text {
-                      id: messageDelegate
-                      width: parent.width
-                      text: _text; color: "black";
-                      wrapMode: Text.Wrap
-                      Layout.alignment: Qt.AlignLeft
-                  }
-                  MouseArea {
+                    id: messageDelegate
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    text: _text; color: "black";
+                    wrapMode: Text.Wrap
+                }
+                MouseArea {
                       id: mouseArea
                       anchors.fill: parent
                       hoverEnabled: true
-                  }
+                }
             }
         }
         Row {
