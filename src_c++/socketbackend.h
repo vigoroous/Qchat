@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QTcpSocket>
+#include <QJsonDocument>
 
 class socketBackend : public QObject
 {
@@ -22,7 +23,7 @@ signals:
     void connected();
     void disconnected();
     void errorSending(const QString &errMsg);
-    void msgGot(const QString &newMsg);
+    void msgGot(const QString &newMsg, const QString &nameSrc);
 
 private:
     QTcpSocket _socket;

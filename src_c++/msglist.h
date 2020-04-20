@@ -2,6 +2,7 @@
 #define MSGLIST_H
 
 #include <QAbstractListModel>
+#include <QPair>
 
 class msgList : public QAbstractListModel
 {
@@ -11,7 +12,8 @@ public:
     explicit msgList(QObject *parent = nullptr);
 
     enum {
-        textRole = Qt::DisplayRole
+        textRole = Qt::DisplayRole,
+        authorRole,
     };
 
     // Basic functionality:
@@ -21,10 +23,10 @@ public:
 
     virtual QHash<int, QByteArray> roleNames() const override;
 
-    Q_INVOKABLE void addMessage(const QString &msg);
+    Q_INVOKABLE void addMessage(const QString &author, const QString &msg);
 
 private:
-    QList<QString> _data = {"one", "two", "fuck_u", "nibba", "gang_gang"};
+    QList<QPair<QString,QString>> _data;
 };
 
 #endif // MSGLIST_H

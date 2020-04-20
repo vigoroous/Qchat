@@ -51,6 +51,11 @@ void socketBackend::_disconnected()
 void socketBackend::_onNewMsg()
 {
     QByteArray readBuf = _socket.read(_socket.bytesAvailable());
-    QString _readMsg(readBuf);
-    emit msgGot(_readMsg);
+    //parse JSON
+    QJsonDocument jsonData = QJsonDocument::fromJson(readBuf);
+    if (jsonData.isNull()) {
+        qWarning("Failed to parse json msg");
+        return;
+    }
+    emit msgGot(jsonData["data"].toString(), jsonData["name"].toString());
 }

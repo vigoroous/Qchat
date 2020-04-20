@@ -2,7 +2,8 @@
 #include <iostream>
 
 msgList::msgList(QObject *parent)
-    : QAbstractListModel(parent)
+    : QAbstractListModel(parent),
+      _data()
 {
 }
 
@@ -23,7 +24,8 @@ QVariant msgList::data(const QModelIndex &index, int role) const
         return QVariant();
 
     // FIXME: Implement me!
-    if (role == textRole) return QVariant(_data.at(index.row()));
+    if (role == authorRole) return QVariant(_data.at(index.row()).first);
+    if (role == textRole) return QVariant(_data.at(index.row()).second);
 
     return QVariant();
 }
@@ -32,12 +34,13 @@ QHash<int, QByteArray> msgList::roleNames() const
 {
     QHash<int, QByteArray> names;
     names[textRole] = "_text";
+    names[authorRole] = "_author";
     return names;
 }
 
-void msgList::addMessage(const QString &msg)
+void msgList::addMessage(const QString &author, const QString &msg)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    _data.push_back(msg);
+    _data.push_back(QPair<QString, QString>(author, msg));
     endInsertRows();
 }

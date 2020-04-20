@@ -52,18 +52,15 @@ Page {
                 width: parent.width
                 height: messageDelegate.paintedHeight + 10
                 border.color: onDelegate ? "lightgreen" : "lightred"
-//                Text {
-//                    id: messageAuthor
-//                    anchors {
-//                        top: parent.top
-//                        bottom: parent.bottom
-//                        left: parent.left
-//                    }
-//                    width:
-//                }
+                Text {
+                    id: messageAuthor
+                    anchors.margins: 5
+                    text: _author+":"
+                    color: "lightgreen"
+                }
                 Text {
                     id: messageDelegate
-                    anchors.fill: parent
+                    anchors{top: parent.top; bottom: parent.bottom; right: parent.right; left: messageAuthor.right}
                     anchors.margins: 5
                     text: _text; color: "black";
                     wrapMode: Text.Wrap
@@ -115,7 +112,7 @@ Page {
                                 } else {
                                     if (!msg) return
                                     if (tcpSocket.isConnected()) tcpSocket.sendStringMsg(msg)
-                                    msgListModel.addMessage(qsTr(msg))
+                                    msgListModel.addMessage(welcomePage._name, qsTr(msg))
                                     textArea.text = ""
                                     messageList.positionViewAtEnd()
                                 }
@@ -123,7 +120,10 @@ Page {
                         }
                         Connections {
                             target: tcpSocket
-                            onMsgGot: msgListModel.addMessage(newMsg)
+                            onMsgGot: {
+                                msgListModel.addMessage(nameSrc, qsTr(newMsg))
+                                console.log("from "+nameSrc+" got: "+newMsg) //debug
+                            }
                         }
                     }
                 }
