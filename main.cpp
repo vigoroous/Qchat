@@ -6,6 +6,7 @@
 
 #include "src_c++/msglist.h"
 #include "src_c++/socketbackend.h"
+#include "src_c++/serverslist.h"
 
 int main(int argc, char *argv[])
 {
@@ -25,10 +26,20 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("availableStyles", QQuickStyle::availableStyles());
     //____________________________________________________
 
-    //REGISTERING_TYPES___________________________________
+    //REGISTERING_ELEMENTS________________________________
     qmlRegisterType<msgList>("usr.msgList", 1 , 0, "MsgListModel");
-    qmlRegisterType<socketBackend>("usr.socketBackend", 1, 0, "TCPSocket");
+    qmlRegisterSingletonType<socketBackend>("usr.socketBackend", 1, 0, "TCPSocket", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+        return new socketBackend();
+    });
+    qmlRegisterSingletonType<serversList>("usr.serversList", 1, 0, "ServersList", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+        return new serversList();
+    });
     //____________________________________________________
+
     engine.load(QUrl("qrc:/main.qml"));
     if (engine.rootObjects().isEmpty())
         return -1;

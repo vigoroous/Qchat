@@ -2,13 +2,35 @@
 
 socketBackend::socketBackend(QObject *parent) : QObject(parent)
 {
-    QObject::connect(&_socket, &QTcpSocket::connected, this, &socketBackend::_connected);
     QObject::connect(&_socket, &QTcpSocket::disconnected, this, &socketBackend::_disconnected);
 }
 
 void socketBackend::connectToHost(const QString &_hostName, int _port)
 {
     _socket.connectToHost(_hostName, _port);
+    //add fetching servers synchorosly in thread
+    //and then QObjet connect
+    if (!_socket.waitForConnected()) {
+        qWarning("Socket is not connected");
+        return;
+    }
+    if (!_socket.waitForReadyRead()) {
+        qWarning("Socket did not send data");
+        return;
+    }
+
+    QByteArray readBuf = _socket.read(_socket.bytesAvailable());
+    QJsonDocument readMsg = QJsonDocument::fromJson(readBuf);
+    if (!readMsg.isArray()){
+        qWarning("Failed to parse json msg");
+        return;
+    }
+    emit serversGot(readMsg.array());
+}
+
+void socketBackend::connectToServer()
+{
+    _connected();
 }
 
 void socketBackend::disconnectFromHost()
@@ -19,8 +41,8 @@ void socketBackend::disconnectFromHost()
 void socketBackend::sendStringMsg(const QString &_msg)
 {
     if (_socket.state() != QAbstractSocket::ConnectedState) {
-        qDebug("error appeared...\n");
-        emit errorSending("Socket is not connected\n");
+        qDebug("error appeared...");
+        emit errorSending("Socket is not connected");
         return;
     }
     QByteArray _msgAsBytes = _msg.toLocal8Bit();
@@ -34,17 +56,17 @@ bool socketBackend::isConnected()
 
 void socketBackend::_connected()
 {
-    qDebug("connected...\n");
+    qDebug("connected...");
     QObject::connect(&_socket, &QTcpSocket::readyRead, this, &socketBackend::_onNewMsg);
-    qDebug("connected signal onReadyRead...\n");
-    emit connected();
+    qDebug("connected signal onReadyRead...");
+    emit connectedMessages();
 }
 
 void socketBackend::_disconnected()
 {
-    qDebug("disconnected...\n");
+    qDebug("disconnected...");
     QObject::disconnect(&_socket, &QTcpSocket::readyRead, this, &socketBackend::_onNewMsg);
-    qDebug("disconnected signal onReadyRead...\n");
+    qDebug("disconnected signal onReadyRead...");
     emit disconnected();
 }
 

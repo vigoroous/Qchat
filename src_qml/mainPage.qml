@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.12
 
 //CUTOM_IMPORT____________________________
 import usr.socketBackend 1.0
+import usr.serversList 1.0
 //________________________________________
 
 Page {
@@ -46,11 +47,12 @@ Page {
         interactive: inPortrait
         position: inPortrait ? 0 : 1
         visible: !inPortrait && onPage
+//redo to fecthing serversList
+        Loader {id: serversLoader; asynchronous: true; anchors.fill: parent }
+        BusyIndicator {id: serversLoaderBusy; running: true } //WTF IS THAT?????
 
+       /*
        ListView {
-           /* TO_DO:
-            * fetch_function to get listmodel dynamically by tcp
-            */
            id: list
            anchors.fill: parent
            clip: true
@@ -98,6 +100,7 @@ Page {
            }
            //_________________________________________________________
        }
+       */
 
        //REWORKKK_____________________________________________________
        TCPSocket {
@@ -109,11 +112,8 @@ Page {
            //ACHTUNG!FUCK!CALLBACKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
            property var callbackOnDisconnect: null
            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-           onConnected: {
-               if (!callbackOnConnect) return console.log("error on calling callbackConnectFunc: " + callbackOnConnect);
-               personCardLoaderBusy.running = false
-               sendStringMsg(welcomePage._name)
-               callbackOnConnect();
+           onServersGot: {
+               serversList.setServers(serversArr)
            }
            onDisconnected: {
                if (!callbackOnDisconnect) return console.log("error on calling callbackDisconnectFunc: " + callbackOnDisconnect);
@@ -121,6 +121,11 @@ Page {
            }
        }
        //_____________________________________________________________
+
+       ServersList {
+           id: serversList
+
+       }
 
     }
     Item {
