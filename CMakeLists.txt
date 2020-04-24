@@ -11,38 +11,29 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# QtCreator supports the following variables for Android, which are identical to qmake Android variables.
-# Check http://doc.qt.io/qt-5/deployment-android.html for more information.
-# They need to be set before the find_package(Qt5 ...) call.
-
-#if(ANDROID)
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-#    if (ANDROID_ABI STREQUAL "armeabi-v7a")
-#        set(ANDROID_EXTRA_LIBS
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libcrypto.so
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libssl.so)
-#    endif()
-#endif()
-
 find_package(Qt5 COMPONENTS Core Quick QuickControls2 REQUIRED)
 
-file(GLOB src_files
-    "src_c++/*.cpp"
-    "src_c++/*.h"
-    )
+# totally wrong
+file(GLOB Qchat_sub
+    "${CMAKE_CURRENT_SOURCE_DIR}/src_c++/*.cpp"
+)
+# should be smth
+# add_subdirectory(src_c++)
 
-if(ANDROID)
-    add_library(Qchat SHARED
-      main.cpp
-      qml.qrc
-    )
-else()
-    add_executable(Qchat
-      main.cpp
-      qml.qrc
-      ${src_files}
-    )
-endif()
+add_executable(Qchat
+  main.cpp
+  qml.qrc
+  ${Qchat_sub}
+)
+
+target_include_directories(Qchat
+	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src_c++)
+
+set_target_properties(Qchat
+  PROPERTIES 
+  CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG /Debug/lib/
+  CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG /Debug/lib/
+  CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG /Debug/bin/)
 
 target_compile_definitions(Qchat
   PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)

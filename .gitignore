@@ -35,6 +35,9 @@ Thumbs.db
 /.qmake.cache
 /.qmake.stash
 *.txt.user
+*.ninja
+*.sublime-project
+*.sublime-workspace
 
 # qtcreator generated files
 *.pro.user*
@@ -73,5 +76,7 @@ Thumbs.db
 *.exe
 
 # Directories
+Debug/*
 Build/*
 Release/*
+build/*
