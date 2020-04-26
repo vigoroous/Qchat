@@ -3,7 +3,6 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.12
 
 //CUTOM_IMPORT____________________________
-import usr.socketBackend 1.0
 import usr.serversList 1.0
 //________________________________________
 
@@ -15,8 +14,8 @@ Page {
         id: menuBar
         Menu {
             title: qsTr("&File")
-            Action { text: qsTr("&New...") }
-            Action { text: qsTr("&Open...") }
+            Action { text: qsTr("&New..."); onTriggered: console.log(serversList.count) }
+            Action { text: qsTr("&Open..."); onTriggered: console.log(serversListModel.get(0)) }
             Action { text: qsTr("&Save") }
             Action { text: qsTr("Save &As...") }
             MenuSeparator { }
@@ -35,6 +34,22 @@ Page {
        }
     }
 
+    StackView.onActivated: ()=>{
+        if (TCPSocket.isConnected()) return;
+        console.log("fired")
+        //debug++++++++++++++++++++++
+        const _hostname = "127.0.0.1"
+        const _port = 8787
+        //+++++++++++++++++++++++++++
+        //REDO!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        TCPSocket.serversGot.connect((e)=>{
+            serversLoaderBusy.running = false
+            serversListModel.setServers(e)
+        })
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        TCPSocket.connectToHost(_hostname, _port, _name)
+    }
+
     readonly property bool inPortrait: window.width < 800
     readonly property bool onPage: stack.currentItem === welcomePage
     Drawer {
@@ -48,86 +63,23 @@ Page {
         position: inPortrait ? 0 : 1
         visible: !inPortrait && onPage
 //redo to fecthing serversList
-        Loader {id: serversLoader; asynchronous: true; anchors.fill: parent }
+        ListView {
+          id: serversList
+          anchors.fill: parent
+          model: serversListModel
+          clip: true
+          ScrollBar.vertical: ScrollBar{}
+          highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+          currentIndex: -1
+          delegate: Text {text: _author}
+        }
         BusyIndicator {id: serversLoaderBusy; running: true } //WTF IS THAT?????
-
-       /*
-       ListView {
-           id: list
-           anchors.fill: parent
-           clip: true
-           ScrollBar.vertical: ScrollBar{}
-           model: AvailablePersons { id:listmodel }
-           highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
-           currentIndex: -1
-           //rework delegate__________________________________________
-           delegate: ItemDelegate {
-               text: name + " (" + status + ")"
-               MouseArea {
-                   anchors.fill: parent
-                   onClicked: {
-                       //reworkkk_(if connection pending and etc...)____________________________________________
-                       if (list.currentIndex === index) return
-                       if (tcpSocket.isConnected() || personCardLoader.source) {
-                           personCardLoader.source = ""
-                           tcpSocket.disconnectFromHost()
-                       }
-                       personCardLoaderBusy.running = true
-                       tcpSocket.callbackOnConnect = function _connFunc() {
-                           if (personCardLoader.status === Loader.Loading) return
-                           list.currentIndex = index
-                           if (personCardLoader.status === Loader.Null)
-                               personCardLoader.setSource("PersonPage.qml", {"_card": name, "_statusText": "Online", "_statusColor": "Green"})
-                       }
-                       tcpSocket.callbackOnDisconnect = function _diconnFunc() {
-                           if (personCardLoader.status === Loader.Loading) {
-                               //handle disconnect before load!!!!!!!!!!!!!!!!!!!!!!!!
-                               personCardLoader.source = ""
-                           }
-                           if (personCardLoader.status === Loader.Ready) {
-                               var currItem = personCardLoader.item
-                               currItem._statusText = "Offline"; currItem._statusColor = "Red"
-                           }
-                       }
-                       //debug++++++++++++++++++++++
-                       const _hostname = "127.0.0.1"
-                       const _port = 8787
-                       //+++++++++++++++++++++++++++
-                       tcpSocket.connectToHost(_hostname, _port)
-                       //______________________________________________________________________________________
-                   }
-               }
-           }
-           //_________________________________________________________
-       }
-       */
-
-       //REWORKKK_____________________________________________________
-       TCPSocket {
-           id: tcpSocket
-           onErrorSending: cosole.log(errMsg)
-           //ACHTUNG!FUCK!CALLBACKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-           property var callbackOnConnect: null
-           //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-           //ACHTUNG!FUCK!CALLBACKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-           property var callbackOnDisconnect: null
-           //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-           onServersGot: {
-               serversList.setServers(serversArr)
-           }
-           onDisconnected: {
-               if (!callbackOnDisconnect) return console.log("error on calling callbackDisconnectFunc: " + callbackOnDisconnect);
-               callbackOnDisconnect();
-           }
-       }
-       //_____________________________________________________________
-
-       ServersList {
-           id: serversList
-
-       }
-
     }
+
+    ServersListModel {
+        id: serversListModel
+    }    
+
     Item {
         id: mainContext
         x: inPortrait ? 0 : drawer.width

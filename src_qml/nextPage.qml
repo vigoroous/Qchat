@@ -38,16 +38,16 @@ Page {
                 text: qsTr("Next page")
                 Layout.alignment: Qt.AlignCenter
                 onClicked: {
-                    if (!wlkInput.text) {
+                    let _name = wlkInput.text
+                    if (!_name) {
                         //rework to tooltip or popup or outline______________________
                         console.log("enter name")
                         //___________________________________________________________
                         return
                     }
-                    stack.replace(stack.initialItem, "mainPage.qml", {"_name": wlkInput.text})
+                    stack.replace(stack.initialItem, "mainPage.qml", {"_name": _name})
                 }
             }
         }
     }
-        //__________________________________________________________?
 }

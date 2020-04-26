@@ -5,15 +5,20 @@ socketBackend::socketBackend(QObject *parent) : QObject(parent)
     QObject::connect(&_socket, &QTcpSocket::disconnected, this, &socketBackend::_disconnected);
 }
 
-void socketBackend::connectToHost(const QString &_hostName, int _port)
+void socketBackend::connectToHost(const QString &_hostName, int _port, const QString &_name)
 {
     _socket.connectToHost(_hostName, _port);
     //add fetching servers synchorosly in thread
     //and then QObjet connect
     if (!_socket.waitForConnected()) {
         qWarning("Socket is not connected");
+        _socket.error();
         return;
     }
+
+    QByteArray _msgAsBytes = _name.toLocal8Bit();
+    _socket.write(_msgAsBytes, _msgAsBytes.size());
+
     if (!_socket.waitForReadyRead()) {
         qWarning("Socket did not send data");
         return;
@@ -25,6 +30,8 @@ void socketBackend::connectToHost(const QString &_hostName, int _port)
         qWarning("Failed to parse json msg");
         return;
     }
+
+    qDebug()<<"servers got "<<QString::fromLocal8Bit(readBuf)<<"("<<readMsg.array()<<")";
     emit serversGot(readMsg.array());
 }
 

@@ -3,6 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QPair>
+#include <QDebug>
 
 class msgList : public QAbstractListModel
 {
@@ -11,17 +12,18 @@ class msgList : public QAbstractListModel
 public:
     explicit msgList(QObject *parent = nullptr);
 
+    // Basic functionality:
+    
     enum {
         textRole = Qt::DisplayRole,
         authorRole,
     };
 
-    // Basic functionality:
+    virtual QHash<int, QByteArray> roleNames() const override;
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-
-    virtual QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE void addMessage(const QString &author, const QString &msg);
 

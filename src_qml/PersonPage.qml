@@ -45,7 +45,7 @@ Page {
             spacing: 5
             clip: true
             ScrollBar.vertical: ScrollBar {policy: ScrollBar.AsNeeded }
-            model: MsgListModel {id: msgListModel}
+            model: msgListModel
             delegate: Rectangle {
                 //WTF_WITH_MOUSE
                 property bool onDelegate: mouseArea.containsMouse

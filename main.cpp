@@ -3,6 +3,7 @@
 #include <QQmlContext>
 #include <QSettings>
 #include <QQuickStyle>
+#include <QVariant>
 
 #include "src_c++/msglist.h"
 #include "src_c++/socketbackend.h"
@@ -26,18 +27,25 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("availableStyles", QQuickStyle::availableStyles());
     //____________________________________________________
 
-    //REGISTERING_ELEMENTS________________________________
-    qmlRegisterType<msgList>("usr.msgList", 1 , 0, "MsgListModel");
-    qmlRegisterSingletonType<socketBackend>("usr.socketBackend", 1, 0, "TCPSocket", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+    //REGISTERING_SINGLETONS_______________________________
+    qmlRegisterSingletonType<msgList>("usr.msgList", 1 , 0, "MsgListModel", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
-        return new socketBackend();
+        return new msgList();
     });
-    qmlRegisterSingletonType<serversList>("usr.serversList", 1, 0, "ServersList", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
-        Q_UNUSED(engine)
-        Q_UNUSED(scriptEngine)
-        return new serversList();
-    });
+    qmlRegisterType<serversList>("usr.serversList", 1, 0, "ServersListModel");
+    // qmlRegisterSingletonType<serversList>("usr.serversList", 1, 0, "ServersListModel", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+    //     Q_UNUSED(engine)
+    //     Q_UNUSED(scriptEngine)
+    //     return new serversList();
+    // });
+    //____________________________________________________
+    //OBJECTS_____________________________________________
+    //can move to context as new ...()
+    socketBackend backend; 
+    //____________________________________________________
+    //SETTING_CONTEXT_____________________________________
+    engine.rootContext()->setContextProperty("TCPSocket", &backend);
     //____________________________________________________
 
     engine.load(QUrl("qrc:/main.qml"));

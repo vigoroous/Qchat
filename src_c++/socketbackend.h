@@ -6,6 +6,7 @@
 #include <QTcpSocket>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QDebug>
 
 class socketBackend : public QObject
 {
@@ -15,12 +16,12 @@ public:
     explicit socketBackend(QObject *parent = nullptr);
 
 public slots:
-    void connectToHost(const QString &_hostName, int _port);
+    void connectToHost(const QString &_hostName, int _port, const QString &_name);
     void connectToServer();
     void disconnectFromHost();
     void sendStringMsg(const QString &_msg);
     bool isConnected();
-    void changeServer(int servDesc);
+    //void changeServer(int servDesc);
 
 signals:
     void serversGot(const QJsonArray &serversArr);
