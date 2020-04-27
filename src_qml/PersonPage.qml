@@ -45,7 +45,7 @@ Page {
             spacing: 5
             clip: true
             ScrollBar.vertical: ScrollBar {policy: ScrollBar.AsNeeded }
-            model: msgListModel
+            model: MsgListModel
             delegate: Rectangle {
                 //WTF_WITH_MOUSE
                 property bool onDelegate: mouseArea.containsMouse
@@ -110,21 +110,21 @@ Page {
                                     var pos = textArea.cursorPosition
                                     textArea.insert(pos,'\n')
                                 } else {
-                                    if (!msg) return
-                                    if (tcpSocket.isConnected()) tcpSocket.sendStringMsg(msg)
-                                    msgListModel.addMessage(welcomePage._name, qsTr(msg))
+                                    if (!msg || !TCPSocket.choosenServer) return
+                                    TCPSocket.sendStringMsg(msg)
+                                    MsgListModel.addMessage(welcomePage._name, qsTr(msg))
                                     textArea.text = ""
                                     messageList.positionViewAtEnd()
                                 }
                             }
                         }
-                        Connections {
-                            target: tcpSocket
-                            onMsgGot: {
-                                msgListModel.addMessage(nameSrc, qsTr(newMsg))
-                                console.log("from "+nameSrc+" got: "+newMsg) //debug
-                            }
-                        }
+
+                    }
+                }
+                Connections {
+                    target: TCPSocket
+                    onMsgGot: {
+                        MsgListModel.addMessage(_author, _text)
                     }
                 }
                 Menu {

@@ -3,6 +3,7 @@
 socketBackend::socketBackend(QObject *parent) : QObject(parent)
 {
     QObject::connect(&_socket, &QTcpSocket::disconnected, this, &socketBackend::_disconnected);
+    _choosen_server = -1;
 }
 
 void socketBackend::connectToHost(const QString &_hostName, int _port, const QString &_name)
@@ -31,12 +32,20 @@ void socketBackend::connectToHost(const QString &_hostName, int _port, const QSt
         return;
     }
 
-    qDebug()<<"servers got "<<QString::fromLocal8Bit(readBuf)<<"("<<readMsg.array()<<")";
+    qDebug()<<"servers got "<<"("<<readMsg.array()<<")";
     emit serversGot(readMsg.array());
 }
 
-void socketBackend::connectToServer()
+void socketBackend::connectToServer(const int num)
 {
+    QJsonObject msg{
+        {"message_type",0},
+        {"message", QString::number(num)}
+    };
+    QJsonDocument msg_json(msg);
+    QByteArray msg_json_as_bytes = msg_json.toJson(QJsonDocument::Compact);
+    _socket.write(msg_json_as_bytes, msg_json_as_bytes.size());
+    _choosen_server = 1;
     _connected();
 }
 
@@ -52,13 +61,23 @@ void socketBackend::sendStringMsg(const QString &_msg)
         emit errorSending("Socket is not connected");
         return;
     }
-    QByteArray _msgAsBytes = _msg.toLocal8Bit();
-    _socket.write(_msgAsBytes, _msgAsBytes.size());
+    QJsonObject msg{
+        {"message_type",1},
+        {"message", _msg}
+    };
+    QJsonDocument msg_json(msg);
+    QByteArray msg_json_as_bytes = msg_json.toJson(QJsonDocument::Compact);
+    _socket.write(msg_json_as_bytes, msg_json_as_bytes.size());
 }
 
 bool socketBackend::isConnected()
 {
     return _socket.state() == QAbstractSocket::ConnectedState;
+}
+
+int socketBackend::choosenServer()
+{
+    return _choosen_server;
 }
 
 void socketBackend::_connected()

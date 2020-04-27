@@ -3,9 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QJsonArray>
-#include <QDebug>
 
-//change to tcpsocket
 class serversList : public QAbstractListModel
 {
     Q_OBJECT
@@ -17,7 +15,6 @@ public:
     
     enum {
         textRole = Qt::DisplayRole,
-        authorRole,
     };
 
     virtual QHash<int, QByteArray> roleNames() const override;
@@ -27,10 +24,9 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
     Q_INVOKABLE void setServers(const QJsonArray &serversArr);
-//    Q_INVOKABLE void addServer(const QJsonObject &server);
 
 private:
-    QJsonArray _servers;
+    QJsonArray _data;
 };
 
 #endif // SERVERSLIST_H

@@ -16,6 +16,7 @@ find_package(Qt5 COMPONENTS Core Quick QuickControls2 REQUIRED)
 # totally wrong
 file(GLOB Qchat_sub
     "${CMAKE_CURRENT_SOURCE_DIR}/src_c++/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src_c++/*.h"
 )
 # should be smth
 # add_subdirectory(src_c++)
@@ -25,9 +26,6 @@ add_executable(Qchat
   qml.qrc
   ${Qchat_sub}
 )
-
-target_include_directories(Qchat
-	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src_c++)
 
 set_target_properties(Qchat
   PROPERTIES 

@@ -3,7 +3,6 @@
 
 #include <QAbstractListModel>
 #include <QPair>
-#include <QDebug>
 
 class msgList : public QAbstractListModel
 {

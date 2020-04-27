@@ -14,8 +14,8 @@ Page {
         id: menuBar
         Menu {
             title: qsTr("&File")
-            Action { text: qsTr("&New..."); onTriggered: console.log(serversList.count) }
-            Action { text: qsTr("&Open..."); onTriggered: console.log(serversListModel.get(0)) }
+            Action { text: qsTr("&New...") }
+            Action { text: qsTr("&Open..."); onTriggered: console.log(ServersList.get(0)) }
             Action { text: qsTr("&Save") }
             Action { text: qsTr("Save &As...") }
             MenuSeparator { }
@@ -35,7 +35,7 @@ Page {
     }
 
     StackView.onActivated: ()=>{
-        if (TCPSocket.isConnected()) return;
+        if (TCPSocket.isConnected) return;
         console.log("fired")
         //debug++++++++++++++++++++++
         const _hostname = "127.0.0.1"
@@ -44,7 +44,7 @@ Page {
         //REDO!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         TCPSocket.serversGot.connect((e)=>{
             serversLoaderBusy.running = false
-            serversListModel.setServers(e)
+            ServersList.setServers(e)
         })
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         TCPSocket.connectToHost(_hostname, _port, _name)
@@ -64,21 +64,28 @@ Page {
         visible: !inPortrait && onPage
 //redo to fecthing serversList
         ListView {
-          id: serversList
+          id: serversListView
           anchors.fill: parent
-          model: serversListModel
-          clip: true
-          ScrollBar.vertical: ScrollBar{}
-          highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+          model: ServersList
+          spacing: 5
           currentIndex: -1
-          delegate: Text {text: _author}
+          highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+          delegate: Text {
+              text: _server
+              MouseArea {
+                  anchors.fill: parent
+                  onClicked: {
+                      if (serversListView.currentIndex == index) return
+                      personCardLoader.source = ""
+                      serversListView.currentIndex = index
+                      TCPSocket.connectToServer(index)
+                      personCardLoader.setSource("PersonPage.qml",{"_card":_server,"_statusText":"...","_statusColor":"green"})
+                  }
+              }
+          }
         }
         BusyIndicator {id: serversLoaderBusy; running: true } //WTF IS THAT?????
     }
-
-    ServersListModel {
-        id: serversListModel
-    }    
 
     Item {
         id: mainContext
@@ -86,7 +93,7 @@ Page {
         width: parent.width - this.x
         height: parent.height
         Loader {id: personCardLoader; asynchronous: true; anchors.fill: parent }
-        BusyIndicator {id: personCardLoaderBusy; running: false } //WTF IS THAT?????
+        BusyIndicator {id: personCardLoaderBusy; running: personCardLoader.status == Loader.Loading } //WTF IS THAT?????
     }
 
     //may_be_put_in_qml_file_______________________________?
