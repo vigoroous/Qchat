@@ -26,6 +26,8 @@ public:
 
     Q_INVOKABLE void addMessage(const QString &author, const QString &msg);
 
+    Q_INVOKABLE void clear();
+
 private:
     QList<QPair<QString,QString>> _data;
 };

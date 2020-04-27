@@ -3,7 +3,7 @@
 socketBackend::socketBackend(QObject *parent) : QObject(parent)
 {
     QObject::connect(&_socket, &QTcpSocket::disconnected, this, &socketBackend::_disconnected);
-    _choosen_server = -1;
+    _choosen_server = false;
 }
 
 void socketBackend::connectToHost(const QString &_hostName, int _port, const QString &_name)
@@ -45,8 +45,12 @@ void socketBackend::connectToServer(const int num)
     QJsonDocument msg_json(msg);
     QByteArray msg_json_as_bytes = msg_json.toJson(QJsonDocument::Compact);
     _socket.write(msg_json_as_bytes, msg_json_as_bytes.size());
-    _choosen_server = 1;
-    _connected();
+    if (_choosen_server) {
+        _changed_server();
+    } else {
+        _choosen_server = true;
+        _connected();
+    }
 }
 
 void socketBackend::disconnectFromHost()
@@ -75,7 +79,7 @@ bool socketBackend::isConnected()
     return _socket.state() == QAbstractSocket::ConnectedState;
 }
 
-int socketBackend::choosenServer()
+bool socketBackend::choosenServer()
 {
     return _choosen_server;
 }
@@ -96,6 +100,11 @@ void socketBackend::_disconnected()
     emit disconnected();
 }
 
+void socketBackend::_changed_server()
+{
+    qDebug("changed server ...");
+    emit serverChanged();
+}
 void socketBackend::_onNewMsg()
 {
     QByteArray readBuf = _socket.read(_socket.bytesAvailable());

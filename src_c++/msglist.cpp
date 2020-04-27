@@ -41,3 +41,10 @@ void msgList::addMessage(const QString &author, const QString &msg)
     _data.push_back(QPair<QString, QString>(author, msg));
     endInsertRows();
 }
+
+void msgList::clear()
+{
+    beginRemoveRows(QModelIndex(), 0, rowCount());
+    _data.clear();
+    endRemoveRows();
+}

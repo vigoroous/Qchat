@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.12
 
 //CUTOM_IMPORT____________________________
 import usr.serversList 1.0
+import usr.msgList 1.0
 //________________________________________
 
 Page {
@@ -79,6 +80,7 @@ Page {
                       personCardLoader.source = ""
                       serversListView.currentIndex = index
                       TCPSocket.connectToServer(index)
+                      MsgListModel.clear();
                       personCardLoader.setSource("PersonPage.qml",{"_card":_server,"_statusText":"...","_statusColor":"green"})
                   }
               }

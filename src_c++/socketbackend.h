@@ -12,8 +12,8 @@
 class socketBackend : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int choosenServer READ choosenServer)
-    Q_PROPERTY(int isConnected READ isConnected)
+    Q_PROPERTY(bool choosenServer READ choosenServer)
+    Q_PROPERTY(bool isConnected READ isConnected)
 
 public:
     explicit socketBackend(QObject *parent = nullptr);
@@ -27,6 +27,7 @@ public slots:
 
 signals:
     void serversGot(const QJsonArray &serversArr);
+    void serverChanged();
     void connectedMessages();
     void disconnected();
     void errorSending(const QString &errMsg);
@@ -36,8 +37,9 @@ private:
     QTcpSocket _socket;
     void _connected();
     void _disconnected();
+    void _changed_server();
     void _onNewMsg();
-    int choosenServer();
+    bool choosenServer();
     bool isConnected();
     int _choosen_server;
 
