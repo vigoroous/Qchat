@@ -18,29 +18,17 @@ void socketBackend::connectToHost(const QString &_hostName, int _port, const QSt
     }
 
     QByteArray _msgAsBytes = _name.toLocal8Bit();
+    qDebug()<<"sending name: "<<_name;
     _socket.write(_msgAsBytes, _msgAsBytes.size());
 
-    if (!_socket.waitForReadyRead()) {
-        qWarning("Socket did not send data");
-        return;
-    }
-
-    QByteArray readBuf = _socket.read(_socket.bytesAvailable());
-    QJsonDocument readMsg = QJsonDocument::fromJson(readBuf);
-    if (!readMsg.isArray()){
-        qWarning("Failed to parse json msg");
-        return;
-    }
-
-    qDebug()<<"servers got "<<"("<<readMsg.array()<<")";
-    emit serversGot(readMsg.array());
+    _connected();
 }
 
 void socketBackend::connectToServer(const int num)
 {
     QJsonObject msg{
-        {"message_type",0},
-        {"message", QString::number(num)}
+        {"message_type",MessageType::ServerChoice},
+        {"message", num}
     };
     QJsonDocument msg_json(msg);
     QByteArray msg_json_as_bytes = msg_json.toJson(QJsonDocument::Compact);
@@ -49,7 +37,6 @@ void socketBackend::connectToServer(const int num)
         _changed_server();
     } else {
         _choosen_server = true;
-        _connected();
     }
 }
 
@@ -66,9 +53,10 @@ void socketBackend::sendStringMsg(const QString &_msg)
         return;
     }
     QJsonObject msg{
-        {"message_type",1},
+        {"message_type",MessageType::Message},
         {"message", _msg}
     };
+    qDebug()<<"sending "<<_msg;
     QJsonDocument msg_json(msg);
     QByteArray msg_json_as_bytes = msg_json.toJson(QJsonDocument::Compact);
     _socket.write(msg_json_as_bytes, msg_json_as_bytes.size());
@@ -110,9 +98,27 @@ void socketBackend::_onNewMsg()
     QByteArray readBuf = _socket.read(_socket.bytesAvailable());
     //parse JSON
     QJsonDocument jsonData = QJsonDocument::fromJson(readBuf);
-    if (jsonData.isNull()) {
+    if (jsonData.isNull() || !jsonData.isObject()) {
         qWarning("Failed to parse json msg");
+        qDebug()<<jsonData;
         return;
     }
-    emit msgGot(jsonData["data"].toString(), jsonData["name"].toString());
+    if (jsonData["message"].isUndefined()) {
+        qWarning("Failed to parse json \"message\" key");
+        return;
+    }
+    if (jsonData["message_type"].isUndefined()) {
+        qWarning("Failed to parse json \"message_type\" key");
+        return;
+    }
+
+    if (jsonData["message_type"].toInt() == MessageType::Message) {
+        qDebug()<<"got msg"<<jsonData;
+        QJsonObject jsonMessage = jsonData["message"].toObject();
+        emit msgGot(jsonMessage["data"].toString(), jsonMessage["name"].toString());
+    }
+    if (jsonData["message_type"].toInt() == MessageType::ServersList) {
+        QJsonArray jsonMessage = jsonData["message"].toArray();
+        emit serversGot(jsonMessage);
+    }
 }

@@ -45,7 +45,7 @@ Page {
         //REDO!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         TCPSocket.serversGot.connect((e)=>{
             serversLoaderBusy.running = false
-            ServersList.setServers(e)
+            ServersList.updateServers(e)
         })
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         TCPSocket.connectToHost(_hostname, _port, _name)

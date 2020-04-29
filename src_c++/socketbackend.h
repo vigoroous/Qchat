@@ -16,6 +16,14 @@ class socketBackend : public QObject
     Q_PROPERTY(bool isConnected READ isConnected)
 
 public:
+    enum MessageType {
+        ServerChoice, //0
+        Message, //1
+        ServersList,
+        ServersStatus, //setup for fetching status
+
+        Unknown,
+    };
     explicit socketBackend(QObject *parent = nullptr);
 
 public slots:
@@ -41,7 +49,7 @@ private:
     void _onNewMsg();
     bool choosenServer();
     bool isConnected();
-    int _choosen_server;
+    bool _choosen_server;
 
 };
 

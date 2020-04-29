@@ -35,7 +35,7 @@ QHash<int, QByteArray> msgList::roleNames() const
     return names;
 }
 
-void msgList::addMessage(const QString &author, const QString &msg)
+void msgList::addMessage(const QString &msg, const QString &author)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     _data.push_back(QPair<QString, QString>(author, msg));

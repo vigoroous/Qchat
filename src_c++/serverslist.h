@@ -25,6 +25,8 @@ public:
 
     Q_INVOKABLE void setServers(const QJsonArray &serversArr);
 
+    Q_INVOKABLE void updateServers(const QJsonArray &serversArr);
+
 private:
     QJsonArray _data;
 };

@@ -112,7 +112,7 @@ Page {
                                 } else {
                                     if (!msg || !TCPSocket.choosenServer) return
                                     TCPSocket.sendStringMsg(msg)
-                                    MsgListModel.addMessage(welcomePage._name, qsTr(msg))
+                                    MsgListModel.addMessage(qsTr(msg), welcomePage._name)
                                     textArea.text = ""
                                     messageList.positionViewAtEnd()
                                 }
@@ -124,7 +124,8 @@ Page {
                 Connections {
                     target: TCPSocket
                     onMsgGot: {
-                        MsgListModel.addMessage(_author, _text)
+                        MsgListModel.addMessage(newMsg, nameSrc)
+                        messageList.positionViewAtEnd()
                     }
                 }
                 Menu {
