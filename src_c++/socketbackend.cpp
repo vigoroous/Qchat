@@ -121,4 +121,8 @@ void socketBackend::_onNewMsg()
         QJsonArray jsonMessage = jsonData["message"].toArray();
         emit serversGot(jsonMessage);
     }
+    if (jsonData["message_type"].toInt() == MessageType::ForcedMove) {
+        int jsonMessage = jsonData["message"].toInt();
+        emit forcedMove(jsonMessage);
+    }
 }

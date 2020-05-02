@@ -35,21 +35,14 @@ QHash<int, QByteArray> serversList::roleNames() const
 
 void serversList::updateServers(const QJsonArray &serversArr)
 {
-    if (_data.empty()) {
-        setServers(serversArr);
-        return;
-    }
-    for (int i = 0; i < serversArr.count(); i++) 
-        if (!_data.contains(serversArr[i])) {
-            beginInsertRows(QModelIndex(), rowCount(), rowCount());
-            _data.push_back(serversArr[i]);
-            endInsertRows();
-        }
+    setServers(serversArr);
 }
 
 void serversList::setServers(const QJsonArray &serversArr)
 {
-    beginInsertRows(QModelIndex(), 0, serversArr.count()-1);
+    QModelIndex top = index(0);
+    QModelIndex bottom = index(serversArr.count());
     _data = serversArr;
-    endInsertRows();
+    emit dataChanged(top, bottom);
+    emit layoutChanged();
 }

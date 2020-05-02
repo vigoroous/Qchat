@@ -21,6 +21,7 @@ public:
         Message, //1
         ServersList,
         ServersStatus, //setup for fetching status
+        ForcedMove,
 
         Unknown,
     };
@@ -40,6 +41,7 @@ signals:
     void disconnected();
     void errorSending(const QString &errMsg);
     void msgGot(const QString &newMsg, const QString &nameSrc);
+    void forcedMove(const int index);
 
 private:
     QTcpSocket _socket;

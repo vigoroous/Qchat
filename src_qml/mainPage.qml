@@ -45,6 +45,7 @@ Page {
         //REDO!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         TCPSocket.serversGot.connect((e)=>{
             serversLoaderBusy.running = false
+            console.log(e)
             ServersList.updateServers(e)
         })
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -87,6 +88,13 @@ Page {
           }
         }
         BusyIndicator {id: serversLoaderBusy; running: true } //WTF IS THAT?????
+        Connections {
+            target: TCPSocket
+            onForcedMove: {
+                console.log("forced move to " + index)
+                serversListView.currentIndex = index
+            }
+        }
     }
 
     Item {
