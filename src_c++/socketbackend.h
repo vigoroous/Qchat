@@ -8,6 +8,8 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QDebug>
+#include <QStringList>
+#include <QRegularExpression>
 
 class socketBackend : public QObject
 {
@@ -52,6 +54,7 @@ private:
     bool choosenServer();
     bool isConnected();
     bool _choosen_server;
+    void handleCommand(const QString &_jsonData);
 
 };
 

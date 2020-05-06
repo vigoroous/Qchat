@@ -97,7 +97,21 @@ void socketBackend::_onNewMsg()
 {
     QByteArray readBuf = _socket.read(_socket.bytesAvailable());
     //parse JSON
-    QJsonDocument jsonData = QJsonDocument::fromJson(readBuf);
+    QString jsonAsString(readBuf);
+    QStringList jsonList = jsonAsString.split(QRegularExpression("{|}"), QString::SkipEmptyParts);
+    for (QStringList::const_iterator it = jsonList.constBegin(); it != jsonList.constEnd(); it++) {
+        QString jsonWord = *it;
+        jsonWord.append('}');
+        jsonWord.prepend('{');
+        qDebug()<<"handling: "<<jsonWord;
+        handleCommand(jsonWord);
+    }
+}
+
+void socketBackend::handleCommand(const QString &_jsonData)
+{
+    QJsonDocument jsonData = QJsonDocument::fromJson(_jsonData.toUtf8());
+
     if (jsonData.isNull() || !jsonData.isObject()) {
         qWarning("Failed to parse json msg");
         qDebug()<<jsonData;
