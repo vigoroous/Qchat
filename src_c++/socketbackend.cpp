@@ -98,11 +98,9 @@ void socketBackend::_onNewMsg()
     QByteArray readBuf = _socket.read(_socket.bytesAvailable());
     //parse JSON
     QString jsonAsString(readBuf);
-    QStringList jsonList = jsonAsString.split(QRegularExpression("{|}"), QString::SkipEmptyParts);
+    QStringList jsonList = jsonAsString.split(";", QString::SkipEmptyParts);
     for (QStringList::const_iterator it = jsonList.constBegin(); it != jsonList.constEnd(); it++) {
         QString jsonWord = *it;
-        jsonWord.append('}');
-        jsonWord.prepend('{');
         qDebug()<<"handling: "<<jsonWord;
         handleCommand(jsonWord);
     }
