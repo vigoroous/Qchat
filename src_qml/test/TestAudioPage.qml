@@ -4,6 +4,49 @@ import QtQuick.Layouts 1.12
 
 Page {
 	id: testAudioPage
+
+	Button {
+		width: 40
+		height: 40
+		anchors.right: parent.right
+		Text {
+			anchors.fill: parent
+			anchors.margins: 1
+			font.pixelSize: 40
+			text: ""
+		}
+		onClicked: volumeManag.open()
+	}
+	Drawer {
+        id: volumeManag
+        width: 0.4 * parent.width
+        height: parent.height
+        edge: Qt.RightEdge
+        ColumnLayout {
+        	anchors{
+        		left: parent.left
+        		right: parent.right
+        		top: parent.top
+        	}
+        	anchors.margins: 5
+        	height: parent.height * 0.3
+        	Text {text: "Input Volume"}
+        	Slider {
+        		id:inputVol;  
+        		value: 1.0;
+        		implicitWidth: parent.width
+        		onMoved: AudioBackend.inputVolume = position
+        	}
+        	Text {text: "Output Volume"}
+        	Slider {
+        		id:outputVol; 
+        		value: 1.0;
+        		implicitWidth: parent.width
+        		onMoved: AudioBackend.outputVolume = position
+        	}
+        }
+    }
+
 	ColumnLayout {
 		anchors.fill: parent
 		spacing: 2
@@ -45,7 +88,6 @@ Page {
 			Button {
 				id: dscnBtn
 				text: "Disconnect"
-				enabled: AudioBackend.isConnected
 				onClicked: AudioBackend.disconnectSocket()
 			}
 			Button {

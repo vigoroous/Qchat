@@ -15,6 +15,8 @@ class audioBackend : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY statusChanged)
+    Q_PROPERTY(qreal outputVolume MEMBER _outputVolume WRITE setOutputVolume)
+    Q_PROPERTY(qreal inputVolume MEMBER _inputVolume WRITE setInputVolume)
 
 public:
     explicit audioBackend(QObject *parent = nullptr);
@@ -24,6 +26,8 @@ public slots:
     void disconnectSocket();
     bool isConnected();
     void toggleStream();
+    void setInputVolume(qreal volume);
+    void setOutputVolume(qreal volume);
 
 signals:
     void connected();
@@ -32,8 +36,8 @@ signals:
     void error(const QString &err);
 
 private:
-    QAudioOutput *_output;
-    QAudioInput *_input;
+    std::unique_ptr<QAudioOutput> _output;
+    std::unique_ptr<QAudioInput> _input;
     QTcpSocket _socket;
     QAudioFormat _format;
     bool _started = false;
@@ -41,6 +45,8 @@ private:
     bool initInputOutputAudio();
     void handleInputStateChanged(QAudio::State newState);
     void handleOutputStateChanged(QAudio::State newState);
+    qreal _inputVolume = 1.0;
+    qreal _outputVolume = 1.0;
     void _disconnected();
     void _connected();
     void _stop();

@@ -46,11 +46,11 @@ bool audioBackend::initInputOutputAudio()
         return false;
     }
 
-    _input = new QAudioInput(_format);
-    _output = new QAudioOutput(_format);
+    _input.reset(new QAudioInput(_format));
+    _output.reset(new QAudioOutput(_format));
 
-    QObject::connect(_input, &QAudioInput::stateChanged, this, &audioBackend::handleInputStateChanged);
-    QObject::connect(_output, &QAudioOutput::stateChanged, this, &audioBackend::handleOutputStateChanged);
+    QObject::connect(_input.get(), &QAudioInput::stateChanged, this, &audioBackend::handleInputStateChanged);
+    QObject::connect(_output.get(), &QAudioOutput::stateChanged, this, &audioBackend::handleOutputStateChanged);
 
     return true;
 }
@@ -82,6 +82,8 @@ void audioBackend::_stop()
 void audioBackend::_start()
 {
     qDebug()<<"starting audio";
+    _input->setVolume(_inputVolume);
+    _output->setVolume(_outputVolume);
     _input->start(&_socket);
     _output->start(&_socket);
     _started = true;
@@ -91,8 +93,8 @@ void audioBackend::_disconnected()
 {
     qDebug()<<"disconnected";
     _stop();
-    if (_output != NULL) delete _output;
-    if (_input != NULL) delete _input;
+    _output.release();
+    _input.release();
     emit disconnected();
     emit statusChanged();
 }
@@ -102,4 +104,20 @@ void audioBackend::_connected()
     qDebug()<<"connected";
     emit connected();
     emit statusChanged();
+}
+
+void audioBackend::setInputVolume(qreal volume)
+{
+    if (volume < 0.0) volume = 0.0;
+    if (volume > 1.0) volume = 1.0;
+    _inputVolume = volume;
+    if (_input) _input->setVolume(_inputVolume);
+}
+
+void audioBackend::setOutputVolume(qreal volume)
+{
+    if (volume < 0.0) volume = 0.0;
+    if (volume > 1.0) volume = 1.0;
+    _outputVolume = volume;
+    if (_output) _output->setVolume(_outputVolume);
 }
