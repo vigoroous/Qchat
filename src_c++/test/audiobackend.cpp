@@ -29,7 +29,6 @@ void audioBackend::toggleStream()
 {
     if (!isConnected()) return;
     (_started)? _stop() : _start() ;
-    _started = !_started;
 }
 
 void audioBackend::disconnectSocket()
@@ -73,9 +72,11 @@ bool audioBackend::isConnected()
 
 void audioBackend::_stop()
 {
+    if (_output->state() == QAudio::StoppedState && _input->state() == QAudio::StoppedState) return;
     qDebug()<<"stopping audio";
     _input->stop();
     _output->stop();
+    _started = false;
 }
 
 void audioBackend::_start()
@@ -83,6 +84,7 @@ void audioBackend::_start()
     qDebug()<<"starting audio";
     _input->start(&_socket);
     _output->start(&_socket);
+    _started = true;
 }
 
 void audioBackend::_disconnected()

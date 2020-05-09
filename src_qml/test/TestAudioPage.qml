@@ -11,29 +11,36 @@ Page {
         	Layout.alignment: Qt.AlignCenter
 			text: "to be available devices"
 		}
-
-        Rectangle {
-            width: 200
-            height: 20
-            border.color: "lightblue"
-            border.width: 2
-            radius: 10
-            color: "white"
-            Layout.alignment: Qt.AlignCenter
-            TextInput {
-                id: tstImput
-                anchors.fill: parent
-                anchors.margins: 3
-                color: "black"
-            }
-        }
+		GridLayout {
+    		columns: 2
+        	Layout.alignment: Qt.AlignCenter    		
+    		Text {text: "server adress"}
+    		Text {text: "port"}
+    		Rectangle {
+                width: 80
+                height: 20
+                border.color: "blue"
+                border.width: 2
+    			TextInput {anchors.fill: parent; anchors.margins: 5; id: addr}
+    		}
+    		Rectangle {
+                width: 40
+                height: 20
+                border.color: "blue"
+                border.width: 2
+    			TextInput {anchors.fill: parent; anchors.margins: 5; id: port}  
+    		}  		
+		}
 
 		RowLayout {
 			spacing: 10
         	Layout.alignment: Qt.AlignCenter
 			Button {
 				text: "Connect"
-				onClicked: AudioBackend.connectSocket("127.0.0.1", 9090)
+				onClicked: {
+					if (!addr.text || !port.text) AudioBackend.connectSocket("127.0.0.1", 9090)
+					else AudioBackend.connectSocket(addr.text, port.text)
+				}
 			}
 			Button {
 				id: dscnBtn
