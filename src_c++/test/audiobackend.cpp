@@ -121,3 +121,11 @@ void audioBackend::setOutputVolume(qreal volume)
     _outputVolume = volume;
     if (_output) _output->setVolume(_outputVolume);
 }
+
+void audioBackend::setNotifyInterval(int ms)
+{
+    if (ms < 500) ms = 500;
+    if (ms > 2000) ms = 2000;
+    _notifyInterval = ms;
+    if (_output) _output->setNotifyInterval(ms);
+}

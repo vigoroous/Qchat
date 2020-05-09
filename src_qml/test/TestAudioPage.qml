@@ -30,19 +30,32 @@ Page {
         	}
         	anchors.margins: 5
         	height: parent.height * 0.3
-        	Text {text: "Input Volume"}
+        	Row{ Text {text: "Input Volume: "} Text {text: Math.trunc(inputVol.position * 100)+"%"}}
         	Slider {
         		id:inputVol;  
         		value: 1.0;
         		implicitWidth: parent.width
         		onMoved: AudioBackend.inputVolume = position
         	}
-        	Text {text: "Output Volume"}
+        	Row{ Text {text: "Output Volume: "} Text {text: Math.trunc(outputVol.position * 100)+"%"}}
         	Slider {
         		id:outputVol; 
         		value: 1.0;
         		implicitWidth: parent.width
         		onMoved: AudioBackend.outputVolume = position
+        	}
+        	Row{ Text {text: "Notify interval: "} Text {text: Math.trunc(notfyInterval.value)+" ms"}}
+        	Slider {
+        		id:notfyInterval; 
+        		from: 500
+        		to: 2000
+        		value: 1000;
+        		implicitWidth: parent.width
+        		onMoved: AudioBackend.notifyInterval = value
+        	}
+        	Button {
+        		text: "debug"
+        		onClicked : console.log(AudioBackend.notifyInterval);
         	}
         }
     }

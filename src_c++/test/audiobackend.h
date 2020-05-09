@@ -17,6 +17,7 @@ class audioBackend : public QObject
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY statusChanged)
     Q_PROPERTY(qreal outputVolume MEMBER _outputVolume WRITE setOutputVolume)
     Q_PROPERTY(qreal inputVolume MEMBER _inputVolume WRITE setInputVolume)
+    Q_PROPERTY(int notifyInterval MEMBER _notifyInterval WRITE setNotifyInterval)
 
 public:
     explicit audioBackend(QObject *parent = nullptr);
@@ -28,6 +29,7 @@ public slots:
     void toggleStream();
     void setInputVolume(qreal volume);
     void setOutputVolume(qreal volume);
+    void setNotifyInterval(int ms);
 
 signals:
     void connected();
@@ -47,6 +49,7 @@ private:
     void handleOutputStateChanged(QAudio::State newState);
     qreal _inputVolume = 1.0;
     qreal _outputVolume = 1.0;
+    int _notifyInterval = 1000;
     void _disconnected();
     void _connected();
     void _stop();
