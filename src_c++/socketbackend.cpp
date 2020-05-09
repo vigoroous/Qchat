@@ -6,7 +6,7 @@ socketBackend::socketBackend(QObject *parent) : QObject(parent)
     _choosen_server = false;
 }
 
-void socketBackend::connectToHost(const QString &_hostName, int _port, const QString &_name)
+void socketBackend::connectToHost(const QString &_hostName, quint16 _port, const QString &_name)
 {
     _socket.connectToHost(_hostName, _port);
     //add fetching servers synchorosly in thread

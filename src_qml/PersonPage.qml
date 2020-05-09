@@ -3,7 +3,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.12
 
 //CUTOM_IMPORT____________________________
-import usr.msgList 1.0
+import usr.msgList 2.0
 //________________________________________
 
 Page {

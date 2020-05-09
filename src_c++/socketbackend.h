@@ -30,7 +30,7 @@ public:
     explicit socketBackend(QObject *parent = nullptr);
 
 public slots:
-    void connectToHost(const QString &_hostName, int _port, const QString &_name);
+    void connectToHost(const QString &_hostName, quint16 _port, const QString &_name);
     void connectToServer(const int num);
     void disconnectFromHost();
     void sendStringMsg(const QString &_msg);

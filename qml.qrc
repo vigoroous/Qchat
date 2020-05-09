@@ -8,5 +8,6 @@
         <file>src_qml/nextPage.qml</file>
         <file>src_qml/PersonPage.qml</file>
         <file>src_qml/SettingPage.qml</file>
+        <file>src_qml/test/TestAudioPage.qml</file>
     </qresource>
 </RCC>

@@ -7,6 +7,7 @@
 #include "src_c++/msglist.h"
 #include "src_c++/socketbackend.h"
 #include "src_c++/serverslist.h"
+#include "src_c++/test/audiobackend.h"
 
 int main(int argc, char *argv[])
 {
@@ -27,23 +28,25 @@ int main(int argc, char *argv[])
     //____________________________________________________
 
     //REGISTERING_SINGLETONS_______________________________
-     qmlRegisterSingletonType<serversList>("usr.serversList", 1, 0, "ServersList", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
-         Q_UNUSED(engine)
-         Q_UNUSED(scriptEngine)
-         return new serversList();
-     });
-     qmlRegisterSingletonType<msgList>("usr.msgList", 1 , 0, "MsgListModel", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
-         Q_UNUSED(engine)
-         Q_UNUSED(scriptEngine)
-         return new msgList();
+    qmlRegisterSingletonType<serversList>("usr.serversList", 2, 0, "ServersList", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+        return new serversList();
+    });
+    qmlRegisterSingletonType<msgList>("usr.msgList", 2 , 0, "MsgListModel", [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+        return new msgList();
     });
     //____________________________________________________
     //OBJECTS_____________________________________________
     //can move to context as new ...()
-    socketBackend backend; 
+    socketBackend TCPbackend; 
+    audioBackend AudioBackend;
     //____________________________________________________
     //SETTING_CONTEXT_____________________________________
-    engine.rootContext()->setContextProperty("TCPSocket", &backend);
+    engine.rootContext()->setContextProperty("TCPSocket", &TCPbackend);
+    engine.rootContext()->setContextProperty("AudioBackend", &AudioBackend);
     //____________________________________________________
 
     engine.load(QUrl("qrc:/main.qml"));
