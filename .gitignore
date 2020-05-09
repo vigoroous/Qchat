@@ -80,3 +80,4 @@ Debug/*
 Build/*
 Release/*
 build/*
+builddir/*

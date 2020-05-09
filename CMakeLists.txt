@@ -29,12 +29,6 @@ add_executable(Qchat
   ${Qchat_sub}
 )
 
-set_target_properties(Qchat
-  PROPERTIES 
-  CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG /Debug/lib/
-  CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG /Debug/lib/
-  CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG /Debug/bin/)
-
 target_compile_definitions(Qchat
   PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 target_link_libraries(Qchat
